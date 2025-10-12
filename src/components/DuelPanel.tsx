@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { ArrowUp, ArrowDown, Clock, DollarSign } from 'lucide-react';
 import { Direction } from '@/types/trading';
 import { useToast } from '@/hooks/use-toast';
+import { OrderBook } from '@/components/OrderBook';
 
 interface DuelPanelProps {
   asset: string;
@@ -109,6 +110,8 @@ export const DuelPanel = ({ asset, currentPrice, timeframe, onStartDuel, isActiv
             Duel in progress...
           </div>
         )}
+
+        <OrderBook />
       </div>
     </Card>
   );

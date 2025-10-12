@@ -4,6 +4,8 @@ import { TradingChart } from '@/components/TradingChart';
 import { DuelPanel } from '@/components/DuelPanel';
 import { TradeHistory } from '@/components/TradeHistory';
 import { AssetSelector } from '@/components/AssetSelector';
+import { TradeNotifications } from '@/components/TradeNotifications';
+import { QuickChat } from '@/components/QuickChat';
 import { Asset, Direction, Trade } from '@/types/trading';
 import { useToast } from '@/hooks/use-toast';
 import { Swords } from 'lucide-react';
@@ -133,6 +135,9 @@ const Index = () => {
             />
           </div>
         </div>
+
+        <TradeNotifications />
+        <QuickChat />
       </div>
     </div>
   );
