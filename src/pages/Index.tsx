@@ -1,14 +1,14 @@
 import { useState } from 'react';
 import { useBinancePrice } from '@/hooks/useBinancePrice';
-import { TradingChart } from '@/components/TradingChart';
+import { CandlestickChart } from '@/components/CandlestickChart';
 import { DuelPanel } from '@/components/DuelPanel';
-import { TradeHistory } from '@/components/TradeHistory';
-import { AssetSelector } from '@/components/AssetSelector';
+import { Header } from '@/components/Header';
+import { ChartSidebar } from '@/components/ChartSidebar';
+import { HistoryTabs } from '@/components/HistoryTabs';
 import { TradeNotifications } from '@/components/TradeNotifications';
 import { QuickChat } from '@/components/QuickChat';
 import { Asset, Direction, Trade } from '@/types/trading';
 import { useToast } from '@/hooks/use-toast';
-import { Swords } from 'lucide-react';
 
 const ASSETS: Asset[] = [
   { symbol: 'btcusdt', name: 'BTC/USDT', icon: '₿' },
@@ -21,6 +21,7 @@ const Index = () => {
   const [selectedAsset, setSelectedAsset] = useState('btcusdt');
   const [timeframe, setTimeframe] = useState(1);
   const [activeTrade, setActiveTrade] = useState<Trade | null>(null);
+  const [balance, setBalance] = useState(100.50);
   const [tradeHistory, setTradeHistory] = useState<Trade[]>(() => {
     const saved = localStorage.getItem('tradeHistory');
     return saved ? JSON.parse(saved) : [];
@@ -96,49 +97,50 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background p-4 md:p-8">
-      <div className="max-w-7xl mx-auto space-y-6">
-        <header className="text-center space-y-2">
-          <div className="flex items-center justify-center gap-3">
-            <Swords className="w-8 h-8 text-primary" />
-            <h1 className="text-4xl font-bold tracking-tight">Trading Duel</h1>
+    <div className="min-h-screen bg-background flex flex-col">
+      <Header
+        assets={ASSETS}
+        selectedAsset={selectedAsset}
+        onAssetChange={setSelectedAsset}
+        selectedTimeframe={timeframe}
+        onTimeframeChange={setTimeframe}
+        currentPrice={priceData?.price || 0}
+        balance={balance}
+        disabled={activeTrade !== null}
+      />
+
+      <div className="flex flex-1">
+        <ChartSidebar />
+        
+        <div className="flex-1 flex flex-col">
+          <div className="flex-1 grid grid-cols-[1fr,360px]">
+            <div className="p-4">
+              <CandlestickChart
+                priceData={priceData}
+                isConnected={isConnected}
+                asset={selectedAsset.toUpperCase()}
+              />
+            </div>
+
+            <div className="border-l border-border/50 p-4 bg-muted/20">
+              <DuelPanel
+                asset={selectedAsset.toUpperCase()}
+                currentPrice={priceData?.price || 0}
+                timeframe={timeframe}
+                onStartDuel={handleStartDuel}
+                isActive={activeTrade !== null}
+              />
+            </div>
           </div>
-          <p className="text-muted-foreground">P2P Binary Options Trading Platform</p>
-        </header>
 
-        <AssetSelector
-          assets={ASSETS}
-          selectedAsset={selectedAsset}
-          onAssetChange={setSelectedAsset}
-          selectedTimeframe={timeframe}
-          onTimeframeChange={setTimeframe}
-          disabled={activeTrade !== null}
-        />
-
-        <div className="grid lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 space-y-6">
-            <TradingChart
-              priceData={priceData}
-              isConnected={isConnected}
-              asset={selectedAsset.toUpperCase()}
-            />
-            <TradeHistory trades={tradeHistory} />
-          </div>
-
-          <div>
-            <DuelPanel
-              asset={selectedAsset.toUpperCase()}
-              currentPrice={priceData?.price || 0}
-              timeframe={timeframe}
-              onStartDuel={handleStartDuel}
-              isActive={activeTrade !== null}
-            />
+          <div className="border-t border-border/50">
+            <HistoryTabs trades={tradeHistory} />
           </div>
         </div>
-
-        <TradeNotifications />
-        <QuickChat />
       </div>
+
+      <TradeNotifications />
+      <QuickChat />
     </div>
   );
 };
