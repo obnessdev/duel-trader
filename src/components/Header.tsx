@@ -2,6 +2,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Asset } from '@/types/trading';
 import { ThemeOption } from '@/components/ThemeSelector';
 import { Palette } from 'lucide-react';
+import { DepositDialog } from './DepositDialog';
 
 interface HeaderProps {
   assets: Asset[];
@@ -103,6 +104,8 @@ export const Header = ({
             <div className="text-xs text-muted-foreground">REAL BALANCE</div>
             <div className="text-2xl font-bold text-success">${balance.toFixed(2)}</div>
           </div>
+
+          <DepositDialog />
 
           <div className="w-12 h-12 rounded-full bg-success flex items-center justify-center overflow-hidden">
             <div className="text-xs font-bold">👤</div>
