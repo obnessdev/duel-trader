@@ -1,4 +1,5 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Button } from '@/components/ui/button';
 import { Asset } from '@/types/trading';
 import { ThemeOption } from '@/components/ThemeSelector';
 import { Palette, User, History, Wallet, LogOut, ArrowDownToLine, ArrowUpFromLine } from 'lucide-react';
@@ -114,6 +115,14 @@ export const Header = ({
             <div className="text-xs text-muted-foreground">REAL BALANCE</div>
             <div className="text-2xl font-bold text-success">${balance.toFixed(2)}</div>
           </div>
+
+          <Button 
+            onClick={() => setDepositOpen(true)}
+            className="bg-success hover:bg-success/90 text-background font-semibold px-6"
+          >
+            <ArrowDownToLine className="w-4 h-4 mr-2" />
+            DEPOSITAR
+          </Button>
 
           <DepositDialog open={depositOpen} onOpenChange={setDepositOpen} />
 
