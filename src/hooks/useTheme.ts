@@ -4,7 +4,22 @@ import { ThemeOption } from '@/components/ThemeSelector';
 export const useTheme = () => {
   const [theme, setTheme] = useState<ThemeOption>(() => {
     const saved = localStorage.getItem('theme');
-    return (saved as ThemeOption) || 'dark';
+    const initialTheme = (saved as ThemeOption) || 'dark';
+    
+    // Aplica o tema inicial imediatamente
+    document.documentElement.classList.remove(
+      'theme-default',
+      'theme-dark',
+      'theme-neon-green',
+      'theme-neon-blue',
+      'theme-neon-purple',
+      'theme-neon-pink',
+      'theme-neon-orange',
+      'theme-cyberpunk'
+    );
+    document.documentElement.classList.add(`theme-${initialTheme}`);
+    
+    return initialTheme;
   });
 
   useEffect(() => {
