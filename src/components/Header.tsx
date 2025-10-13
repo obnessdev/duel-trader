@@ -1,8 +1,17 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Asset } from '@/types/trading';
 import { ThemeOption } from '@/components/ThemeSelector';
-import { Palette } from 'lucide-react';
+import { Palette, User, History, Wallet, LogOut, ArrowDownToLine, ArrowUpFromLine } from 'lucide-react';
 import { DepositDialog } from './DepositDialog';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useState } from 'react';
 
 interface HeaderProps {
   assets: Asset[];
@@ -29,6 +38,7 @@ export const Header = ({
   currentTheme,
   onThemeChange
 }: HeaderProps) => {
+  const [depositOpen, setDepositOpen] = useState(false);
   const timeframes = [
     { value: 1, label: '1 minute' },
     { value: 5, label: '5 minutes' },
@@ -105,11 +115,44 @@ export const Header = ({
             <div className="text-2xl font-bold text-success">${balance.toFixed(2)}</div>
           </div>
 
-          <DepositDialog />
+          <DepositDialog open={depositOpen} onOpenChange={setDepositOpen} />
 
-          <div className="w-12 h-12 rounded-full bg-success flex items-center justify-center overflow-hidden">
-            <div className="text-xs font-bold">👤</div>
-          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="focus:outline-none">
+                <Avatar className="w-12 h-12 cursor-pointer hover:opacity-80 transition-opacity">
+                  <AvatarImage src="" alt="User" />
+                  <AvatarFallback className="bg-success text-background">
+                    <User className="w-6 h-6" />
+                  </AvatarFallback>
+                </Avatar>
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuItem className="cursor-pointer">
+                <User className="mr-2 h-4 w-4" />
+                <span>MINHA CONTA</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem className="cursor-pointer">
+                <History className="mr-2 h-4 w-4" />
+                <span>HISTÓRICO</span>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem className="cursor-pointer" onClick={() => setDepositOpen(true)}>
+                <ArrowDownToLine className="mr-2 h-4 w-4" />
+                <span>DEPOSITAR</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem className="cursor-pointer">
+                <ArrowUpFromLine className="mr-2 h-4 w-4" />
+                <span>SACAR</span>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem className="cursor-pointer text-destructive focus:text-destructive">
+                <LogOut className="mr-2 h-4 w-4" />
+                <span>DESLOGAR</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
     </header>

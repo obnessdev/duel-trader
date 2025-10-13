@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
@@ -7,7 +7,12 @@ import { Label } from '@/components/ui/label';
 import { Copy, Wallet, Bitcoin } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
-export const DepositDialog = () => {
+interface DepositDialogProps {
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+}
+
+export const DepositDialog = ({ open, onOpenChange }: DepositDialogProps) => {
   const [amount, setAmount] = useState('');
   const { toast } = useToast();
 
@@ -30,13 +35,7 @@ export const DepositDialog = () => {
   };
 
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button className="bg-success hover:bg-success/90 text-white font-semibold px-6">
-          <Wallet className="w-4 h-4 mr-2" />
-          Depositar
-        </Button>
-      </DialogTrigger>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle className="text-2xl">Fazer Depósito</DialogTitle>
