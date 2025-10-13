@@ -10,14 +10,14 @@ export const HistoryTabs = ({ trades }: HistoryTabsProps) => {
   const completedTrades = trades.filter(t => t.status === 'completed');
 
   return (
-    <Tabs defaultValue="history" className="w-full">
+    <Tabs defaultValue="history" className="w-full h-80 flex flex-col">
       <TabsList className="bg-background border-b border-border/50 rounded-none w-full justify-start h-12">
         <TabsTrigger value="history" className="text-sm">History</TabsTrigger>
         <TabsTrigger value="orders" className="text-sm">Orders</TabsTrigger>
         <TabsTrigger value="operations" className="text-sm">Operations</TabsTrigger>
       </TabsList>
       
-      <TabsContent value="history" className="mt-0 bg-background border border-t-0 border-border/50">
+      <TabsContent value="history" className="mt-0 bg-background border border-t-0 border-border/50 flex-1 overflow-auto">
         <Table>
           <TableHeader>
             <TableRow className="border-border/50 hover:bg-transparent">
@@ -88,11 +88,11 @@ export const HistoryTabs = ({ trades }: HistoryTabsProps) => {
         </Table>
       </TabsContent>
       
-      <TabsContent value="orders" className="mt-0 bg-background border border-t-0 border-border/50 p-8 text-center text-muted-foreground text-sm">
+      <TabsContent value="orders" className="mt-0 bg-background border border-t-0 border-border/50 flex-1 overflow-auto p-8 text-center text-muted-foreground text-sm">
         No active orders
       </TabsContent>
-      
-      <TabsContent value="operations" className="mt-0 bg-background border border-t-0 border-border/50 p-8 text-center text-muted-foreground text-sm">
+
+      <TabsContent value="operations" className="mt-0 bg-background border border-t-0 border-border/50 flex-1 overflow-auto p-8 text-center text-muted-foreground text-sm">
         No operations
       </TabsContent>
     </Tabs>

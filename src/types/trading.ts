@@ -29,3 +29,20 @@ export interface PriceData {
   timestamp: number;
   change24h: number;
 }
+
+export type ChatMessageType = 'bet' | 'result' | 'emoji' | 'system' | 'text';
+
+export interface ChatMessage {
+  id: string;
+  type: ChatMessageType;
+  username: string;
+  content: string;
+  timestamp: number;
+  data?: {
+    direction?: Direction;
+    amount?: number;
+    asset?: string;
+    result?: 'win' | 'loss';
+    profit?: number;
+  };
+}

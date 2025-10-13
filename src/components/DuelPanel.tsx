@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ArrowUp, ArrowDown, Clock, DollarSign } from 'lucide-react';
 import { Direction } from '@/types/trading';
 import { useToast } from '@/hooks/use-toast';
@@ -10,12 +11,11 @@ import { OrderBook } from '@/components/OrderBook';
 interface DuelPanelProps {
   asset: string;
   currentPrice: number;
-  timeframe: number;
   onStartDuel: (direction: Direction, amount: number) => void;
   isActive: boolean;
 }
 
-export const DuelPanel = ({ asset, currentPrice, timeframe, onStartDuel, isActive }: DuelPanelProps) => {
+export const DuelPanel = ({ asset, currentPrice, onStartDuel, isActive }: DuelPanelProps) => {
   const [amount, setAmount] = useState<string>('10');
   const { toast } = useToast();
 
@@ -71,22 +71,27 @@ export const DuelPanel = ({ asset, currentPrice, timeframe, onStartDuel, isActiv
             </div>
           </div>
 
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Clock className="w-4 h-4" />
-            <span>Duration: {timeframe}m</span>
+          <div className="space-y-2">
+            <label className="text-sm text-muted-foreground flex items-center gap-2">
+              <Clock className="w-4 h-4" />
+              Duration
+            </label>
+            <div className="px-3 py-2 bg-muted/50 border border-border/50 rounded text-sm font-medium text-center">
+              1 minuto (fixo)
+            </div>
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <Button
               onClick={() => handleStartDuel('CALL')}
               disabled={isActive}
-              className="h-32 bg-success hover:bg-success/90 text-white transition-all"
+              className="h-32 bg-green-600 hover:bg-green-700 text-white transition-all disabled:opacity-50"
             >
               <div className="flex flex-col items-center gap-2">
                 <ArrowUp className="w-10 h-10" />
                 <div className="space-y-1">
                   <div className="font-bold text-2xl">CALL</div>
-                  <div className="text-xs opacity-90">Price will rise</div>
+                  <div className="text-xs opacity-90">Preço vai subir ↗</div>
                 </div>
               </div>
             </Button>
@@ -94,13 +99,13 @@ export const DuelPanel = ({ asset, currentPrice, timeframe, onStartDuel, isActiv
             <Button
               onClick={() => handleStartDuel('PUT')}
               disabled={isActive}
-              className="h-32 bg-destructive hover:bg-destructive/90 text-white transition-all"
+              className="h-32 bg-red-600 hover:bg-red-700 text-white transition-all disabled:opacity-50"
             >
               <div className="flex flex-col items-center gap-2">
                 <ArrowDown className="w-10 h-10" />
                 <div className="space-y-1">
                   <div className="font-bold text-2xl">PUT</div>
-                  <div className="text-xs opacity-90">Price will fall</div>
+                  <div className="text-xs opacity-90">Preço vai cair ↘</div>
                 </div>
               </div>
             </Button>

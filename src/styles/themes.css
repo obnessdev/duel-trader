@@ -1,0 +1,353 @@
+/* Tema Padrão */
+.theme-default {
+  --background: 0 0% 100%;
+  --foreground: 222.2 84% 4.9%;
+  --card: 0 0% 100%;
+  --card-foreground: 222.2 84% 4.9%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222.2 84% 4.9%;
+  --primary: 222.2 47.4% 11.2%;
+  --primary-foreground: 210 40% 98%;
+  --secondary: 210 40% 96%;
+  --secondary-foreground: 222.2 84% 4.9%;
+  --muted: 210 40% 96%;
+  --muted-foreground: 215.4 16.3% 46.9%;
+  --accent: 210 40% 96%;
+  --accent-foreground: 222.2 84% 4.9%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 214.3 31.8% 91.4%;
+  --input: 214.3 31.8% 91.4%;
+  --ring: 222.2 84% 4.9%;
+  --radius: 0.5rem;
+  --chart: 210 40% 98%;
+  --grid: 210 40% 94%;
+  --success: 142.1 76.2% 36.3%;
+}
+
+/* Tema Escuro */
+.theme-dark {
+  --background: 222.2 84% 4.9%;
+  --foreground: 210 40% 98%;
+  --card: 222.2 84% 4.9%;
+  --card-foreground: 210 40% 98%;
+  --popover: 222.2 84% 4.9%;
+  --popover-foreground: 210 40% 98%;
+  --primary: 210 40% 98%;
+  --primary-foreground: 222.2 47.4% 11.2%;
+  --secondary: 217.2 32.6% 17.5%;
+  --secondary-foreground: 210 40% 98%;
+  --muted: 217.2 32.6% 17.5%;
+  --muted-foreground: 215 20.2% 65.1%;
+  --accent: 217.2 32.6% 17.5%;
+  --accent-foreground: 210 40% 98%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 217.2 32.6% 17.5%;
+  --input: 217.2 32.6% 17.5%;
+  --ring: 212.7 26.8% 83.9%;
+  --radius: 0.5rem;
+  --chart: 217.2 32.6% 15%;
+  --grid: 217.2 32.6% 20%;
+  --success: 142.1 76.2% 36.3%;
+}
+
+/* Tema Neon Verde */
+.theme-neon-green {
+  --background: 120 100% 2%;
+  --foreground: 120 100% 95%;
+  --card: 120 100% 3%;
+  --card-foreground: 120 100% 95%;
+  --popover: 120 100% 3%;
+  --popover-foreground: 120 100% 95%;
+  --primary: 120 100% 50%;
+  --primary-foreground: 120 100% 2%;
+  --secondary: 120 100% 8%;
+  --secondary-foreground: 120 100% 95%;
+  --muted: 120 100% 8%;
+  --muted-foreground: 120 30% 70%;
+  --accent: 120 100% 15%;
+  --accent-foreground: 120 100% 95%;
+  --destructive: 0 100% 50%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 120 100% 15%;
+  --input: 120 100% 10%;
+  --ring: 120 100% 50%;
+  --radius: 0.5rem;
+  --chart: 120 100% 4%;
+  --grid: 120 100% 12%;
+  --success: 120 100% 50%;
+}
+
+/* Tema Neon Azul */
+.theme-neon-blue {
+  --background: 200 100% 2%;
+  --foreground: 200 100% 95%;
+  --card: 200 100% 3%;
+  --card-foreground: 200 100% 95%;
+  --popover: 200 100% 3%;
+  --popover-foreground: 200 100% 95%;
+  --primary: 180 100% 50%;
+  --primary-foreground: 200 100% 2%;
+  --secondary: 200 100% 8%;
+  --secondary-foreground: 200 100% 95%;
+  --muted: 200 100% 8%;
+  --muted-foreground: 200 30% 70%;
+  --accent: 200 100% 15%;
+  --accent-foreground: 200 100% 95%;
+  --destructive: 0 100% 50%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 180 100% 15%;
+  --input: 200 100% 10%;
+  --ring: 180 100% 50%;
+  --radius: 0.5rem;
+  --chart: 200 100% 4%;
+  --grid: 180 100% 12%;
+  --success: 120 100% 50%;
+}
+
+/* Tema Neon Roxo */
+.theme-neon-purple {
+  --background: 270 100% 2%;
+  --foreground: 270 100% 95%;
+  --card: 270 100% 3%;
+  --card-foreground: 270 100% 95%;
+  --popover: 270 100% 3%;
+  --popover-foreground: 270 100% 95%;
+  --primary: 270 100% 50%;
+  --primary-foreground: 270 100% 2%;
+  --secondary: 270 100% 8%;
+  --secondary-foreground: 270 100% 95%;
+  --muted: 270 100% 8%;
+  --muted-foreground: 270 30% 70%;
+  --accent: 270 100% 15%;
+  --accent-foreground: 270 100% 95%;
+  --destructive: 0 100% 50%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 270 100% 15%;
+  --input: 270 100% 10%;
+  --ring: 270 100% 50%;
+  --radius: 0.5rem;
+  --chart: 270 100% 4%;
+  --grid: 270 100% 12%;
+  --success: 120 100% 50%;
+}
+
+/* Tema Neon Rosa */
+.theme-neon-pink {
+  --background: 320 100% 2%;
+  --foreground: 320 100% 95%;
+  --card: 320 100% 3%;
+  --card-foreground: 320 100% 95%;
+  --popover: 320 100% 3%;
+  --popover-foreground: 320 100% 95%;
+  --primary: 320 100% 50%;
+  --primary-foreground: 320 100% 2%;
+  --secondary: 320 100% 8%;
+  --secondary-foreground: 320 100% 95%;
+  --muted: 320 100% 8%;
+  --muted-foreground: 320 30% 70%;
+  --accent: 320 100% 15%;
+  --accent-foreground: 320 100% 95%;
+  --destructive: 0 100% 50%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 320 100% 15%;
+  --input: 320 100% 10%;
+  --ring: 320 100% 50%;
+  --radius: 0.5rem;
+  --chart: 320 100% 4%;
+  --grid: 320 100% 12%;
+  --success: 120 100% 50%;
+}
+
+/* Tema Neon Laranja */
+.theme-neon-orange {
+  --background: 30 100% 2%;
+  --foreground: 30 100% 95%;
+  --card: 30 100% 3%;
+  --card-foreground: 30 100% 95%;
+  --popover: 30 100% 3%;
+  --popover-foreground: 30 100% 95%;
+  --primary: 30 100% 50%;
+  --primary-foreground: 30 100% 2%;
+  --secondary: 30 100% 8%;
+  --secondary-foreground: 30 100% 95%;
+  --muted: 30 100% 8%;
+  --muted-foreground: 30 30% 70%;
+  --accent: 30 100% 15%;
+  --accent-foreground: 30 100% 95%;
+  --destructive: 0 100% 50%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 30 100% 15%;
+  --input: 30 100% 10%;
+  --ring: 30 100% 50%;
+  --radius: 0.5rem;
+  --chart: 30 100% 4%;
+  --grid: 30 100% 12%;
+  --success: 120 100% 50%;
+}
+
+/* Tema Cyberpunk */
+.theme-cyberpunk {
+  --background: 200 50% 3%;
+  --foreground: 300 100% 95%;
+  --card: 200 50% 4%;
+  --card-foreground: 300 100% 95%;
+  --popover: 200 50% 4%;
+  --popover-foreground: 300 100% 95%;
+  --primary: 300 100% 50%;
+  --primary-foreground: 200 50% 3%;
+  --secondary: 200 50% 8%;
+  --secondary-foreground: 300 100% 95%;
+  --muted: 200 50% 8%;
+  --muted-foreground: 280 30% 70%;
+  --accent: 180 100% 50%;
+  --accent-foreground: 200 50% 3%;
+  --destructive: 0 100% 50%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 180 100% 15%;
+  --input: 200 50% 10%;
+  --ring: 300 100% 50%;
+  --radius: 0.5rem;
+  --chart: 200 50% 5%;
+  --grid: 180 100% 12%;
+  --success: 120 100% 50%;
+}
+
+/* Efeitos Neon para temas neon */
+.theme-neon-green .bg-primary,
+.theme-neon-blue .bg-primary,
+.theme-neon-purple .bg-primary,
+.theme-neon-pink .bg-primary,
+.theme-neon-orange .bg-primary,
+.theme-cyberpunk .bg-primary {
+  box-shadow: 0 0 10px hsl(var(--primary)), 0 0 20px hsl(var(--primary)), 0 0 30px hsl(var(--primary));
+}
+
+/* Efeitos de glow para velas nos temas neon */
+.theme-neon-green .neon-glow.bg-green-500,
+.theme-neon-blue .neon-glow.bg-green-500,
+.theme-neon-purple .neon-glow.bg-green-500,
+.theme-neon-pink .neon-glow.bg-green-500,
+.theme-neon-orange .neon-glow.bg-green-500,
+.theme-cyberpunk .neon-glow.bg-green-500 {
+  box-shadow: 0 0 8px rgb(34 197 94), 0 0 15px rgb(34 197 94), 0 0 25px rgba(34, 197, 94, 0.4);
+  filter: brightness(1.2);
+}
+
+.theme-neon-green .neon-glow.bg-red-500,
+.theme-neon-blue .neon-glow.bg-red-500,
+.theme-neon-purple .neon-glow.bg-red-500,
+.theme-neon-pink .neon-glow.bg-red-500,
+.theme-neon-orange .neon-glow.bg-red-500,
+.theme-cyberpunk .neon-glow.bg-red-500 {
+  box-shadow: 0 0 8px rgb(239 68 68), 0 0 15px rgb(239 68 68), 0 0 25px rgba(239, 68, 68, 0.4);
+  filter: brightness(1.2);
+}
+
+/* Efeitos de glow para pavios nos temas neon */
+.theme-neon-green .neon-glow.bg-green-400,
+.theme-neon-blue .neon-glow.bg-green-400,
+.theme-neon-purple .neon-glow.bg-green-400,
+.theme-neon-pink .neon-glow.bg-green-400,
+.theme-neon-orange .neon-glow.bg-green-400,
+.theme-cyberpunk .neon-glow.bg-green-400 {
+  box-shadow: 0 0 6px rgb(74 222 128), 0 0 12px rgba(74, 222, 128, 0.3);
+  filter: brightness(1.3);
+}
+
+.theme-neon-green .neon-glow.bg-red-400,
+.theme-neon-blue .neon-glow.bg-red-400,
+.theme-neon-purple .neon-glow.bg-red-400,
+.theme-neon-pink .neon-glow.bg-red-400,
+.theme-neon-orange .neon-glow.bg-red-400,
+.theme-cyberpunk .neon-glow.bg-red-400 {
+  box-shadow: 0 0 6px rgb(248 113 113), 0 0 12px rgba(248, 113, 113, 0.3);
+  filter: brightness(1.3);
+}
+
+/* Efeito hover mais intenso para temas neon */
+.theme-neon-green .neon-glow:hover,
+.theme-neon-blue .neon-glow:hover,
+.theme-neon-purple .neon-glow:hover,
+.theme-neon-pink .neon-glow:hover,
+.theme-neon-orange .neon-glow:hover,
+.theme-cyberpunk .neon-glow:hover {
+  filter: brightness(1.4) saturate(1.2);
+  transform: scale(1.02);
+}
+
+/* Efeito de brilho no texto para temas neon */
+.theme-neon-green .text-primary,
+.theme-neon-blue .text-primary,
+.theme-neon-purple .text-primary,
+.theme-neon-pink .text-primary,
+.theme-neon-orange .text-primary,
+.theme-cyberpunk .text-primary {
+  text-shadow: 0 0 10px hsl(var(--primary));
+}
+
+/* Animação de pulsação para elementos importantes */
+@keyframes neon-pulse {
+  0%, 100% {
+    opacity: 1;
+    box-shadow: 0 0 5px hsl(var(--primary)), 0 0 10px hsl(var(--primary));
+  }
+  50% {
+    opacity: 0.8;
+    box-shadow: 0 0 10px hsl(var(--primary)), 0 0 20px hsl(var(--primary)), 0 0 30px hsl(var(--primary));
+  }
+}
+
+.theme-neon-green .animate-pulse,
+.theme-neon-blue .animate-pulse,
+.theme-neon-purple .animate-pulse,
+.theme-neon-pink .animate-pulse,
+.theme-neon-orange .animate-pulse,
+.theme-cyberpunk .animate-pulse {
+  animation: neon-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Efeitos especiais para bordas nos temas neon */
+.theme-neon-green .border,
+.theme-neon-blue .border,
+.theme-neon-purple .border,
+.theme-neon-pink .border,
+.theme-neon-orange .border,
+.theme-cyberpunk .border {
+  border-color: hsl(var(--primary) / 0.3);
+}
+
+/* Scrollbars neon */
+.theme-neon-green ::-webkit-scrollbar-thumb,
+.theme-neon-blue ::-webkit-scrollbar-thumb,
+.theme-neon-purple ::-webkit-scrollbar-thumb,
+.theme-neon-pink ::-webkit-scrollbar-thumb,
+.theme-neon-orange ::-webkit-scrollbar-thumb,
+.theme-cyberpunk ::-webkit-scrollbar-thumb {
+  background: hsl(var(--primary));
+  border-radius: 4px;
+  box-shadow: 0 0 5px hsl(var(--primary));
+}
+
+/* Efeito de digitação neon */
+@keyframes neon-typing {
+  0%, 50% {
+    border-right-color: hsl(var(--primary));
+    box-shadow: 0 0 5px hsl(var(--primary));
+  }
+  51%, 100% {
+    border-right-color: transparent;
+    box-shadow: none;
+  }
+}
+
+/* Cards com efeito neon sutil */
+.theme-neon-green .bg-card,
+.theme-neon-blue .bg-card,
+.theme-neon-purple .bg-card,
+.theme-neon-pink .bg-card,
+.theme-neon-orange .bg-card,
+.theme-cyberpunk .bg-card {
+  box-shadow: 0 0 20px hsl(var(--primary) / 0.1), inset 0 0 20px hsl(var(--primary) / 0.05);
+}

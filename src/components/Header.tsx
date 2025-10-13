@@ -1,5 +1,7 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Asset } from '@/types/trading';
+import { ThemeOption } from '@/components/ThemeSelector';
+import { Palette } from 'lucide-react';
 
 interface HeaderProps {
   assets: Asset[];
@@ -10,6 +12,8 @@ interface HeaderProps {
   currentPrice: number;
   balance: number;
   disabled?: boolean;
+  currentTheme: ThemeOption;
+  onThemeChange: (theme: ThemeOption) => void;
 }
 
 export const Header = ({
@@ -20,13 +24,26 @@ export const Header = ({
   onTimeframeChange,
   currentPrice,
   balance,
-  disabled
+  disabled,
+  currentTheme,
+  onThemeChange
 }: HeaderProps) => {
   const timeframes = [
     { value: 1, label: '1 minute' },
     { value: 5, label: '5 minutes' },
     { value: 15, label: '15 minutes' },
     { value: 30, label: '30 minutes' }
+  ];
+
+  const themes = [
+    { value: 'default', label: 'Padrão' },
+    { value: 'dark', label: 'Escuro' },
+    { value: 'neon-green', label: 'Neon Verde' },
+    { value: 'neon-blue', label: 'Neon Azul' },
+    { value: 'neon-purple', label: 'Neon Roxo' },
+    { value: 'neon-pink', label: 'Neon Rosa' },
+    { value: 'neon-orange', label: 'Neon Laranja' },
+    { value: 'cyberpunk', label: 'Cyberpunk' }
   ];
 
   return (
@@ -44,48 +61,35 @@ export const Header = ({
 
           <div className="flex items-center gap-4">
             <div className="text-sm text-muted-foreground">Asset</div>
-            <Select value={selectedAsset} onValueChange={onAssetChange} disabled={disabled}>
-              <SelectTrigger className="w-[140px] bg-muted/50 border-border/50">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {assets.map((asset) => (
-                  <SelectItem key={asset.symbol} value={asset.symbol}>
-                    {asset.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className="px-3 py-2 bg-muted/50 border border-border/50 rounded text-sm font-medium">
+              BTC/USDT
+            </div>
           </div>
 
           <div className="flex items-center gap-4">
             <div className="text-sm text-muted-foreground">Timeframe</div>
-            <Select 
-              value={selectedTimeframe.toString()} 
-              onValueChange={(v) => onTimeframeChange(parseInt(v))}
-              disabled={disabled}
-            >
+            <div className="px-3 py-2 bg-muted/50 border border-border/50 rounded text-sm font-medium">
+              1 minute
+            </div>
+          </div>
+
+          <div className="flex items-center gap-4">
+            <div className="text-sm text-muted-foreground">Tema</div>
+            <Select value={currentTheme} onValueChange={onThemeChange}>
               <SelectTrigger className="w-[140px] bg-muted/50 border-border/50">
-                <SelectValue />
+                <div className="flex items-center gap-2">
+                  <Palette className="w-4 h-4" />
+                  <SelectValue />
+                </div>
               </SelectTrigger>
               <SelectContent>
-                {timeframes.map((tf) => (
-                  <SelectItem key={tf.value} value={tf.value.toString()}>
-                    {tf.label}
+                {themes.map((theme) => (
+                  <SelectItem key={theme.value} value={theme.value}>
+                    {theme.label}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-success rounded-lg flex items-center justify-center">
-            <span className="text-xs font-bold">⚔️</span>
-          </div>
-          <div className="text-center">
-            <div className="text-xs text-muted-foreground">Trading Duel</div>
-            <div className="text-[10px] text-muted-foreground">P2P Binary Options Trading Platform</div>
           </div>
         </div>
 
