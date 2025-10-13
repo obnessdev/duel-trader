@@ -210,7 +210,7 @@ export const CandlestickChart = ({ priceData, isConnected, asset }: CandlestickC
               <div key={i} className="flex-1 relative group h-full" style={{ minWidth: '12px', maxWidth: '24px' }}>
                 {/* Pavio Superior */}
                 <div
-                  className={`absolute left-1/2 -translate-x-1/2 w-[2px] neon-glow ${isGreen ? 'bg-green-400' : 'bg-red-400'}`}
+                  className={`absolute left-1/2 -translate-x-1/2 w-[2px] ${isGreen ? 'bg-green-500' : 'bg-red-500'}`}
                   style={{
                     top: `${wickTop}%`,
                     height: `${Math.max(bodyTop - wickTop, 0)}%`
@@ -219,7 +219,7 @@ export const CandlestickChart = ({ priceData, isConnected, asset }: CandlestickC
 
                 {/* Pavio Inferior */}
                 <div
-                  className={`absolute left-1/2 -translate-x-1/2 w-[2px] neon-glow ${isGreen ? 'bg-green-400' : 'bg-red-400'}`}
+                  className={`absolute left-1/2 -translate-x-1/2 w-[2px] ${isGreen ? 'bg-green-500' : 'bg-red-500'}`}
                   style={{
                     top: `${bodyTop + bodyHeight}%`,
                     height: `${Math.max(wickBottom - (bodyTop + bodyHeight), 0)}%`
@@ -228,10 +228,10 @@ export const CandlestickChart = ({ priceData, isConnected, asset }: CandlestickC
 
                 {/* Corpo da Vela */}
                 <div
-                  className={`absolute left-1/2 -translate-x-1/2 w-full transition-all duration-200 border rounded-sm neon-glow ${
+                  className={`absolute left-1/2 -translate-x-1/2 w-full transition-all duration-200 border rounded-sm ${
                     isGreen
-                      ? 'bg-green-500 border-green-400 hover:bg-green-400 shadow-sm'
-                      : 'bg-red-500 border-red-400 hover:bg-red-400 shadow-sm'
+                      ? 'bg-green-500 border-green-400 hover:bg-green-400'
+                      : 'bg-red-500 border-red-400 hover:bg-red-400'
                   }`}
                   style={{
                     top: `${bodyTop}%`,

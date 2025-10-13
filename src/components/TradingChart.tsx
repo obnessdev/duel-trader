@@ -232,9 +232,9 @@ export const TradingChart = ({ priceData, isConnected, asset }: TradingChartProp
                   {/* Candle Body - Main */}
                   <div
                     className={`absolute left-1/2 -translate-x-1/2 w-full transition-all duration-200 ${
-                      isGreen 
-                        ? 'bg-green-500 hover:bg-green-400 shadow-lg shadow-green-500/30' 
-                        : 'bg-red-500 hover:bg-red-400 shadow-lg shadow-red-500/30'
+                      isGreen
+                        ? 'bg-green-500 hover:bg-green-400'
+                        : 'bg-red-500 hover:bg-red-400'
                     }`}
                     style={{
                       top: `${bodyTop}%`,
