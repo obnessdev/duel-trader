@@ -1,5 +1,7 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Asset } from '@/types/trading';
 import { ThemeOption } from '@/components/ThemeSelector';
 import { Palette, User, Settings, CreditCard, Shield, LogOut, HelpCircle, History, ArrowDownToLine, ArrowUpFromLine } from 'lucide-react';
@@ -107,48 +109,61 @@ export const Header = ({
             <div className="text-2xl font-bold text-success">${balance.toFixed(2)}</div>
           </div>
 
+          <Button
+            onClick={() => navigate('/deposito')}
+            className="bg-success hover:bg-success/90 text-background font-semibold px-6"
+          >
+            <ArrowDownToLine className="w-4 h-4 mr-2" />
+            DEPOSITAR
+          </Button>
+
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className="w-12 h-12 rounded-full bg-success flex items-center justify-center overflow-hidden hover:bg-success/80 transition-colors cursor-pointer">
-                <User className="w-5 h-5 text-white" />
+              <button className="focus:outline-none">
+                <Avatar className="w-12 h-12 cursor-pointer hover:opacity-80 transition-opacity">
+                  <AvatarImage src="" alt="User" />
+                  <AvatarFallback className="bg-success text-background">
+                    <User className="w-6 h-6" />
+                  </AvatarFallback>
+                </Avatar>
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuItem onClick={() => navigate('/minha-conta')}>
-                <User className="w-4 h-4 mr-2" />
-                Minha Conta
+              <DropdownMenuItem onClick={() => navigate('/minha-conta')} className="cursor-pointer">
+                <User className="mr-2 h-4 w-4" />
+                <span>Minha Conta</span>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => navigate('/deposito')}>
-                <ArrowDownToLine className="w-4 h-4 mr-2" />
-                Depósito
+              <DropdownMenuItem onClick={() => navigate('/deposito')} className="cursor-pointer">
+                <ArrowDownToLine className="mr-2 h-4 w-4" />
+                <span>Depósito</span>
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate('/saque')}>
-                <ArrowUpFromLine className="w-4 h-4 mr-2" />
-                Saque
+              <DropdownMenuItem onClick={() => navigate('/saque')} className="cursor-pointer">
+                <ArrowUpFromLine className="mr-2 h-4 w-4" />
+                <span>Saque</span>
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate('/historico')}>
-                <History className="w-4 h-4 mr-2" />
-                Histórico
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>
-                <Settings className="w-4 h-4 mr-2" />
-                Configurações
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Shield className="w-4 h-4 mr-2" />
-                Segurança
+              <DropdownMenuItem onClick={() => navigate('/historico')} className="cursor-pointer">
+                <History className="mr-2 h-4 w-4" />
+                <span>Histórico</span>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>
-                <HelpCircle className="w-4 h-4 mr-2" />
-                Ajuda & Suporte
+              <DropdownMenuItem className="cursor-pointer">
+                <Settings className="mr-2 h-4 w-4" />
+                <span>Configurações</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem className="cursor-pointer">
+                <Shield className="mr-2 h-4 w-4" />
+                <span>Segurança</span>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="text-destructive">
-                <LogOut className="w-4 h-4 mr-2" />
-                Sair
+              <DropdownMenuItem className="cursor-pointer">
+                <HelpCircle className="mr-2 h-4 w-4" />
+                <span>Ajuda & Suporte</span>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem className="cursor-pointer text-destructive focus:text-destructive">
+                <LogOut className="mr-2 h-4 w-4" />
+                <span>Sair</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
