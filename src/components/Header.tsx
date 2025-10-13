@@ -1,10 +1,16 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Asset } from '@/types/trading';
 import { ThemeOption } from '@/components/ThemeSelector';
-import { Palette, User, Settings, CreditCard, Shield, LogOut, HelpCircle, History, ArrowDownToLine, ArrowUpFromLine } from 'lucide-react';
+import { Palette, User, History, Wallet, LogOut, ArrowDownToLine, ArrowUpFromLine } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useNavigate } from 'react-router-dom';
 
 interface HeaderProps {
@@ -109,19 +115,11 @@ export const Header = ({
             <div className="text-2xl font-bold text-success">${balance.toFixed(2)}</div>
           </div>
 
-          <Button
-            onClick={() => navigate('/deposito')}
-            className="bg-success hover:bg-success/90 text-background font-semibold px-6"
-          >
-            <ArrowDownToLine className="w-4 h-4 mr-2" />
-            DEPOSITAR
-          </Button>
-
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button className="focus:outline-none">
                 <Avatar className="w-12 h-12 cursor-pointer hover:opacity-80 transition-opacity">
-                  <AvatarImage src="" alt="User" />
+                  <AvatarImage src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face" alt="User" />
                   <AvatarFallback className="bg-success text-background">
                     <User className="w-6 h-6" />
                   </AvatarFallback>
@@ -129,41 +127,27 @@ export const Header = ({
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuItem onClick={() => navigate('/minha-conta')} className="cursor-pointer">
+              <DropdownMenuItem className="cursor-pointer" onClick={() => navigate('/minha-conta')}>
                 <User className="mr-2 h-4 w-4" />
-                <span>Minha Conta</span>
+                <span>MINHA CONTA</span>
               </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => navigate('/deposito')} className="cursor-pointer">
-                <ArrowDownToLine className="mr-2 h-4 w-4" />
-                <span>Depósito</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate('/saque')} className="cursor-pointer">
-                <ArrowUpFromLine className="mr-2 h-4 w-4" />
-                <span>Saque</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate('/historico')} className="cursor-pointer">
+              <DropdownMenuItem className="cursor-pointer" onClick={() => navigate('/historico')}>
                 <History className="mr-2 h-4 w-4" />
-                <span>Histórico</span>
+                <span>HISTÓRICO</span>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="cursor-pointer">
-                <Settings className="mr-2 h-4 w-4" />
-                <span>Configurações</span>
+              <DropdownMenuItem className="cursor-pointer" onClick={() => navigate('/deposito')}>
+                <ArrowDownToLine className="mr-2 h-4 w-4" />
+                <span>DEPOSITAR</span>
               </DropdownMenuItem>
-              <DropdownMenuItem className="cursor-pointer">
-                <Shield className="mr-2 h-4 w-4" />
-                <span>Segurança</span>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem className="cursor-pointer">
-                <HelpCircle className="mr-2 h-4 w-4" />
-                <span>Ajuda & Suporte</span>
+              <DropdownMenuItem className="cursor-pointer" onClick={() => navigate('/saque')}>
+                <ArrowUpFromLine className="mr-2 h-4 w-4" />
+                <span>SACAR</span>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem className="cursor-pointer text-destructive focus:text-destructive">
                 <LogOut className="mr-2 h-4 w-4" />
-                <span>Sair</span>
+                <span>DESLOGAR</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
