@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowUp, ArrowDown, Clock, DollarSign } from 'lucide-react';
+import { ArrowUp, ArrowDown, Clock, DollarSign, Plus, Minus } from 'lucide-react';
 import { Direction } from '@/types/trading';
 import { useToast } from '@/hooks/use-toast';
 import { OrderBook } from '@/components/OrderBook';
@@ -13,9 +13,29 @@ interface DuelPanelProps {
   currentPrice: number;
   onStartDuel: (direction: Direction, amount: number) => void;
   isActive: boolean;
+  isEqualizerActive?: boolean;
+  bets?: Array<{
+    id: string;
+    username: string;
+    amount: number;
+    direction: 'CALL' | 'PUT';
+    timestamp: number;
+    status: 'pending' | 'accepted' | 'rejected';
+  }>;
+  availableLiquidity?: number;
+  onScanComplete?: (acceptedBets: any[], rejectedBets: any[]) => void;
 }
 
-export const DuelPanel = ({ asset, currentPrice, onStartDuel, isActive }: DuelPanelProps) => {
+export const DuelPanel = ({
+  asset,
+  currentPrice,
+  onStartDuel,
+  isActive,
+  isEqualizerActive = false,
+  bets = [],
+  availableLiquidity = 10000,
+  onScanComplete
+}: DuelPanelProps) => {
   const [amount, setAmount] = useState<string>('10');
   const { toast } = useToast();
 
@@ -46,27 +66,88 @@ export const DuelPanel = ({ asset, currentPrice, onStartDuel, isActive }: DuelPa
   const fee = parseFloat(amount) * 0.05;
   const total = parseFloat(amount) + fee;
 
+  const incrementAmount = () => {
+    const current = parseFloat(amount) || 0;
+    const newAmount = Math.min(current + 1, 1000);
+    setAmount(newAmount.toString());
+  };
+
+  const decrementAmount = () => {
+    const current = parseFloat(amount) || 0;
+    const newAmount = Math.max(current - 1, 1);
+    setAmount(newAmount.toString());
+  };
+
+  const handleQuickAmount = (value: number) => {
+    setAmount(value.toString());
+  };
+
   return (
     <div className="space-y-4">
       <Card className="bg-background border-border/50 p-6">
         <div className="space-y-4">
-          <div className="space-y-2">
+          <div className="space-y-3">
             <label className="text-sm text-muted-foreground flex items-center gap-2">
               <DollarSign className="w-4 h-4" />
-              Bet Amount
+              Valor da Aposta
             </label>
-            <Input
-              type="number"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              disabled={isActive}
-              className="text-3xl font-bold h-16 text-center bg-muted/50 border-border/50"
-              min="1"
-              max="1000"
-              step="1"
-            />
+
+            {/* Input com botões + e - */}
+            <div className="relative">
+              <Button
+                variant="outline"
+                size="icon"
+                className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10 h-12 w-12 rounded-full"
+                onClick={decrementAmount}
+                disabled={isActive || parseFloat(amount) <= 1}
+                type="button"
+              >
+                <Minus className="w-4 h-4" />
+              </Button>
+
+              <Input
+                type="number"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                disabled={isActive}
+                className="text-3xl font-bold h-16 text-center bg-muted/50 border-border/50 px-16 cursor-text"
+                min="1"
+                max="1000"
+                step="1"
+                placeholder="Digite o valor..."
+              />
+
+              <Button
+                variant="outline"
+                size="icon"
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10 h-12 w-12 rounded-full"
+                onClick={incrementAmount}
+                disabled={isActive || parseFloat(amount) >= 1000}
+                type="button"
+              >
+                <Plus className="w-4 h-4" />
+              </Button>
+            </div>
+
+            {/* Botões de valores rápidos */}
+            <div className="flex gap-2 justify-center">
+              {[5, 10, 25, 50, 100].map((value) => (
+                <Button
+                  key={value}
+                  variant="ghost"
+                  size="sm"
+                  className="text-xs px-3 py-1 h-7 bg-muted/30 hover:bg-muted/60"
+                  onClick={() => handleQuickAmount(value)}
+                  disabled={isActive}
+                  type="button"
+                >
+                  ${value}
+                </Button>
+              ))}
+            </div>
+
             <div className="flex justify-between text-xs text-muted-foreground">
-              <span>Fee (5%): ${fee.toFixed(2)}</span>
+              <span>Taxa (5%): ${fee.toFixed(2)}</span>
               <span>Total: ${total.toFixed(2)}</span>
             </div>
           </div>
@@ -119,7 +200,11 @@ export const DuelPanel = ({ asset, currentPrice, onStartDuel, isActive }: DuelPa
         </div>
       </Card>
 
-      <OrderBook />
+      <OrderBook
+        isScanActive={isEqualizerActive}
+        userBetAmount={bets.find(bet => bet.username === 'Você')?.amount || 0}
+        wasUserBetAccepted={true} // Sempre aceitar para simplicidade
+      />
     </div>
   );
 };

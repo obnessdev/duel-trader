@@ -214,48 +214,13 @@
   --success: 120 100% 50%;
 }
 
-/* Efeitos Neon para temas neon */
-.theme-neon-green .bg-primary,
-.theme-neon-blue .bg-primary,
-.theme-neon-purple .bg-primary,
-.theme-neon-pink .bg-primary,
-.theme-neon-orange .bg-primary,
-.theme-cyberpunk .bg-primary {
-  box-shadow: 0 0 10px hsl(var(--primary)), 0 0 20px hsl(var(--primary)), 0 0 30px hsl(var(--primary));
-}
+/* Efeitos Neon removidos - sem brilhos */
 
 /* Gráficos mantêm cores tradicionais verde/vermelho em todos os temas */
 
-/* Efeito de brilho no texto para temas neon */
-.theme-neon-green .text-primary,
-.theme-neon-blue .text-primary,
-.theme-neon-purple .text-primary,
-.theme-neon-pink .text-primary,
-.theme-neon-orange .text-primary,
-.theme-cyberpunk .text-primary {
-  text-shadow: 0 0 10px hsl(var(--primary));
-}
+/* Efeito de brilho no texto removido - sem text-shadow */
 
-/* Animação de pulsação para elementos importantes */
-@keyframes neon-pulse {
-  0%, 100% {
-    opacity: 1;
-    box-shadow: 0 0 5px hsl(var(--primary)), 0 0 10px hsl(var(--primary));
-  }
-  50% {
-    opacity: 0.8;
-    box-shadow: 0 0 10px hsl(var(--primary)), 0 0 20px hsl(var(--primary)), 0 0 30px hsl(var(--primary));
-  }
-}
-
-.theme-neon-green .animate-pulse,
-.theme-neon-blue .animate-pulse,
-.theme-neon-purple .animate-pulse,
-.theme-neon-pink .animate-pulse,
-.theme-neon-orange .animate-pulse,
-.theme-cyberpunk .animate-pulse {
-  animation: neon-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
+/* Animação de pulsação removida - sem glow effects */
 
 /* Efeitos especiais para bordas nos temas neon */
 .theme-neon-green .border,
@@ -267,7 +232,7 @@
   border-color: hsl(var(--primary) / 0.3);
 }
 
-/* Scrollbars neon */
+/* Scrollbars neon - sem glow */
 .theme-neon-green ::-webkit-scrollbar-thumb,
 .theme-neon-blue ::-webkit-scrollbar-thumb,
 .theme-neon-purple ::-webkit-scrollbar-thumb,
@@ -276,27 +241,6 @@
 .theme-cyberpunk ::-webkit-scrollbar-thumb {
   background: hsl(var(--primary));
   border-radius: 4px;
-  box-shadow: 0 0 5px hsl(var(--primary));
 }
 
-/* Efeito de digitação neon */
-@keyframes neon-typing {
-  0%, 50% {
-    border-right-color: hsl(var(--primary));
-    box-shadow: 0 0 5px hsl(var(--primary));
-  }
-  51%, 100% {
-    border-right-color: transparent;
-    box-shadow: none;
-  }
-}
-
-/* Cards com efeito neon sutil */
-.theme-neon-green .bg-card,
-.theme-neon-blue .bg-card,
-.theme-neon-purple .bg-card,
-.theme-neon-pink .bg-card,
-.theme-neon-orange .bg-card,
-.theme-cyberpunk .bg-card {
-  box-shadow: 0 0 20px hsl(var(--primary) / 0.1), inset 0 0 20px hsl(var(--primary) / 0.05);
-}
+/* Efeitos de digitação e cards removidos - sem glows */
