@@ -273,18 +273,24 @@ export const AdvancedTradingChart = ({
     mainSeries.setData(chartData);
 
     // Add indicators if enabled
-    if (showIndicators) {
+    if (showIndicators && candleData.length >= 20) {
       // Clear existing indicator series
       Object.values(indicatorSeriesRefs.current).forEach(series => {
         if (series) {
-          if (series.upper) { // Bollinger bands
-            chart.removeSeries(series.upper);
-            chart.removeSeries(series.lower);
-            chart.removeSeries(series.middle);
-          } else if (Array.isArray(series)) { // Support/Resistance lines
-            series.forEach(line => chart.removeSeries(line));
-          } else {
-            chart.removeSeries(series);
+          try {
+            if (series.upper) { // Bollinger bands
+              if (series.upper) chart.removeSeries(series.upper);
+              if (series.lower) chart.removeSeries(series.lower);
+              if (series.middle) chart.removeSeries(series.middle);
+            } else if (Array.isArray(series)) { // Support/Resistance lines
+              series.forEach(line => {
+                if (line) chart.removeSeries(line);
+              });
+            } else {
+              chart.removeSeries(series);
+            }
+          } catch (error) {
+            console.warn('Error removing series:', error);
           }
         }
       });
@@ -293,58 +299,63 @@ export const AdvancedTradingChart = ({
       // SMA 20
       if (showIndicators.sma20) {
         const smaData = calculateSMA(candleData, 20);
-        const smaSeries = chart.addLineSeries({
-          color: '#FF6B6B',
-          lineWidth: 2,
-          title: 'SMA(20)'
-        });
-        smaSeries.setData(smaData);
-        indicatorSeriesRefs.current.sma20 = smaSeries;
+        if (smaData.length > 0) {
+          const smaSeries = chart.addLineSeries({
+            color: '#FF6B6B',
+            lineWidth: 2,
+            title: 'SMA(20)'
+          });
+          smaSeries.setData(smaData);
+          indicatorSeriesRefs.current.sma20 = smaSeries;
+        }
       }
 
       // EMA 20
       if (showIndicators.ema20) {
         const emaData = calculateEMA(candleData, 20);
-        const emaSeries = chart.addLineSeries({
-          color: '#4ECDC4',
-          lineWidth: 2,
-          title: 'EMA(20)'
-        });
-        emaSeries.setData(emaData);
-        indicatorSeriesRefs.current.ema20 = emaSeries;
+        if (emaData.length > 0) {
+          const emaSeries = chart.addLineSeries({
+            color: '#4ECDC4',
+            lineWidth: 2,
+            title: 'EMA(20)'
+          });
+          emaSeries.setData(emaData);
+          indicatorSeriesRefs.current.ema20 = emaSeries;
+        }
       }
 
       // Bollinger Bands
       if (showIndicators.bollinger) {
         const bbData = calculateBollingerBands(candleData, 20, 2);
+        if (bbData.length > 0) {
+          // Upper band
+          const upperBand = chart.addLineSeries({
+            color: '#9B59B6',
+            lineWidth: 1,
+            lineStyle: 2, // dashed
+            title: 'BB Upper'
+          });
+          upperBand.setData(bbData.map(d => ({ time: d.time, value: d.upper })));
 
-        // Upper band
-        const upperBand = chart.addLineSeries({
-          color: '#9B59B6',
-          lineWidth: 1,
-          lineStyle: 2, // dashed
-          title: 'BB Upper'
-        });
-        upperBand.setData(bbData.map(d => ({ time: d.time, value: d.upper })));
+          // Lower band
+          const lowerBand = chart.addLineSeries({
+            color: '#9B59B6',
+            lineWidth: 1,
+            lineStyle: 2, // dashed
+            title: 'BB Lower'
+          });
+          lowerBand.setData(bbData.map(d => ({ time: d.time, value: d.lower })));
 
-        // Lower band
-        const lowerBand = chart.addLineSeries({
-          color: '#9B59B6',
-          lineWidth: 1,
-          lineStyle: 2, // dashed
-          title: 'BB Lower'
-        });
-        lowerBand.setData(bbData.map(d => ({ time: d.time, value: d.lower })));
+          // Middle band (SMA)
+          const middleBand = chart.addLineSeries({
+            color: '#9B59B6',
+            lineWidth: 1,
+            title: 'BB Middle'
+          });
+          middleBand.setData(bbData.map(d => ({ time: d.time, value: d.middle })));
 
-        // Middle band (SMA)
-        const middleBand = chart.addLineSeries({
-          color: '#9B59B6',
-          lineWidth: 1,
-          title: 'BB Middle'
-        });
-        middleBand.setData(bbData.map(d => ({ time: d.time, value: d.middle })));
-
-        indicatorSeriesRefs.current.bollinger = { upper: upperBand, lower: lowerBand, middle: middleBand };
+          indicatorSeriesRefs.current.bollinger = { upper: upperBand, lower: lowerBand, middle: middleBand };
+        }
       }
 
       // Volume Profile (simplified overlay)

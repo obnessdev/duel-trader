@@ -16,6 +16,8 @@ interface IndicatorData {
 export const calculateSMA = (data: CandleData[], period: number = 20): IndicatorData[] => {
   const result: IndicatorData[] = [];
 
+  if (!data || data.length < period) return result;
+
   for (let i = period - 1; i < data.length; i++) {
     let sum = 0;
     for (let j = 0; j < period; j++) {
@@ -35,6 +37,9 @@ export const calculateSMA = (data: CandleData[], period: number = 20): Indicator
 // Exponential Moving Average
 export const calculateEMA = (data: CandleData[], period: number = 20): IndicatorData[] => {
   const result: IndicatorData[] = [];
+
+  if (!data || data.length < period) return result;
+
   const multiplier = 2 / (period + 1);
 
   // Start with SMA for first value
@@ -124,6 +129,8 @@ export interface BollingerBands {
 export const calculateBollingerBands = (data: CandleData[], period: number = 20, stdDev: number = 2): BollingerBands[] => {
   const result: BollingerBands[] = [];
 
+  if (!data || data.length < period) return result;
+
   for (let i = period - 1; i < data.length; i++) {
     // Calculate SMA
     let sum = 0;
@@ -160,6 +167,8 @@ export interface MACDData {
 
 export const calculateMACD = (data: CandleData[], fastPeriod: number = 12, slowPeriod: number = 26, signalPeriod: number = 9): MACDData[] => {
   const result: MACDData[] = [];
+
+  if (!data || data.length < slowPeriod) return result;
 
   const fastEMA = calculateEMA(data, fastPeriod);
   const slowEMA = calculateEMA(data, slowPeriod);

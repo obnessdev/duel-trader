@@ -42,7 +42,7 @@ export const IndicatorChart = ({ candleData, type, height = 150 }: IndicatorChar
   }, []);
 
   useEffect(() => {
-    if (!chartContainerRef.current || candleData.length === 0) return;
+    if (!chartContainerRef.current || !candleData || candleData.length === 0) return;
 
     // Theme detection
     const classList = Array.from(document.documentElement.classList);
@@ -119,6 +119,8 @@ export const IndicatorChart = ({ candleData, type, height = 150 }: IndicatorChar
       // RSI Chart
       const rsiData = calculateRSI(candleData, 14);
 
+      if (rsiData.length === 0) return;
+
       const rsiSeries = chart.addLineSeries({
         color: '#FF9500',
         lineWidth: 2,
@@ -163,6 +165,8 @@ export const IndicatorChart = ({ candleData, type, height = 150 }: IndicatorChar
     } else if (type === 'macd') {
       // MACD Chart
       const macdData = calculateMACD(candleData, 12, 26, 9);
+
+      if (macdData.length === 0) return;
 
       // MACD Line
       const macdSeries = chart.addLineSeries({
