@@ -80,13 +80,13 @@ export const ChartSidebar = ({
 
       {/* Chart Type */}
       <div className="flex flex-col items-center mb-3 border-b border-border/30 pb-2">
-        <div className="text-[10px] text-muted-foreground mb-1">Tipo</div>
+        <div className="text-label-xs text-muted-foreground mb-1">Tipo</div>
         {chartTypes.map((type) => (
           <Button
             key={type.id}
-            variant={chartType === type.id ? "default" : "ghost"}
+            variant="ghost"
             size="icon"
-            className="w-8 h-8 mb-1"
+            className={`w-8 h-8 mb-1 hover:bg-transparent ${chartType === type.id ? 'text-primary' : 'text-muted-foreground'}`}
             onClick={() => onChartTypeChange?.(type.id as any)}
             title={type.label}
           >
@@ -97,13 +97,13 @@ export const ChartSidebar = ({
 
       {/* Tools */}
       <div className="flex flex-col items-center mb-3 border-b border-border/30 pb-2">
-        <div className="text-[10px] text-muted-foreground mb-1">Tools</div>
+        <div className="text-label-xs text-muted-foreground mb-1">Tools</div>
         {tools.map((tool) => (
           <Button
             key={tool.id}
-            variant={activeTool === tool.id ? "default" : "ghost"}
+            variant="ghost"
             size="icon"
-            className="w-8 h-8 mb-1"
+            className={`w-8 h-8 mb-1 hover:bg-transparent ${activeTool === tool.id ? 'text-primary' : 'text-muted-foreground'}`}
             onClick={() => handleToolClick(tool.id)}
             title={tool.label}
           >
@@ -114,13 +114,13 @@ export const ChartSidebar = ({
 
       {/* Indicators */}
       <div className="flex flex-col items-center">
-        <div className="text-[10px] text-muted-foreground mb-1">Ind</div>
+        <div className="text-label-xs text-muted-foreground mb-1">Ind</div>
         {indicators.map((indicator) => (
           <Button
             key={indicator.id}
-            variant={showIndicators?.[indicator.id] ? "default" : "ghost"}
+            variant="ghost"
             size="sm"
-            className="w-8 h-6 text-[9px] p-0 mb-1"
+            className={`w-8 h-6 text-[9px] p-0 mb-1 hover:bg-transparent ${showIndicators?.[indicator.id] ? 'text-primary font-bold' : 'text-muted-foreground'}`}
             onClick={() => onToggleIndicator?.(indicator.id)}
             title={indicator.name}
           >

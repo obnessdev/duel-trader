@@ -1,13 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 
 interface OrderBookEntry {
+  id: number;
   time: string;
-  callCount: number;
-  putCount: number;
-  callAmount: number;
-  putAmount: number;
+  count: number;
+  type: 'call' | 'put';
 }
 
 interface OrderBookProps {
@@ -21,35 +19,75 @@ export const OrderBook = ({
   userBetAmount = 0,
   wasUserBetAccepted = false
 }: OrderBookProps) => {
-  const [orders, setOrders] = useState<OrderBookEntry[]>([]);
+  const [callOrders, setCallOrders] = useState<OrderBookEntry[]>([]);
+  const [putOrders, setPutOrders] = useState<OrderBookEntry[]>([]);
+  const [callTotal, setCallTotal] = useState(6.00);
+  const [putTotal, setPutTotal] = useState(14.00);
 
   useEffect(() => {
-    // Simulate order book data
+    // Simulate order book data similar to the screenshot
     const generateOrders = () => {
       const now = new Date();
-      const entries: OrderBookEntry[] = [];
 
-      for (let i = 0; i < 8; i++) {
-        const time = new Date(now.getTime() + i * 15000);
-        entries.push({
-          time: time.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
-          callCount: Math.floor(Math.random() * 6) + 1,
-          putCount: Math.floor(Math.random() * 6) + 1,
-          callAmount: Math.floor(Math.random() * 500) + 50, // $50-$550
-          putAmount: Math.floor(Math.random() * 500) + 50   // $50-$550
-        });
-      }
+      // Generate CALL orders (3 orders)
+      const newCallOrders: OrderBookEntry[] = [
+        {
+          id: 1,
+          time: '23:49:07',
+          count: 1,
+          type: 'call'
+        },
+        {
+          id: 2,
+          time: '23:49:21',
+          count: 2,
+          type: 'call'
+        },
+        {
+          id: 3,
+          time: '23:49:35',
+          count: 3,
+          type: 'call'
+        }
+      ];
 
-      setOrders(entries);
+      // Generate PUT orders (4 orders)
+      const newPutOrders: OrderBookEntry[] = [
+        {
+          id: 4,
+          time: '23:49:17',
+          count: 4,
+          type: 'put'
+        },
+        {
+          id: 5,
+          time: '23:49:26',
+          count: 5,
+          type: 'put'
+        },
+        {
+          id: 6,
+          time: '23:49:40',
+          count: 6,
+          type: 'put'
+        },
+        {
+          id: 2,
+          time: '23:49:52',
+          count: 2,
+          type: 'put'
+        }
+      ];
+
+      setCallOrders(newCallOrders);
+      setPutOrders(newPutOrders);
     };
 
     generateOrders();
-    const interval = setInterval(generateOrders, 15000);
+    const interval = setInterval(generateOrders, 10000);
 
     return () => clearInterval(interval);
   }, []);
-
-  const maxAmount = Math.max(...orders.flatMap(o => [o.callAmount, o.putAmount]), 1);
 
   return (
     <div className="relative">
@@ -63,72 +101,66 @@ export const OrderBook = ({
         </div>
       )}
 
-      <Card className="bg-background border-border/50 p-4 relative">
-        <div className="text-center mb-4">
-          <h3 className="text-sm font-semibold">Order Book</h3>
+      <Card className="bg-background border-border/50 p-3 h-full flex flex-col">
+        {/* Header */}
+        <div className="text-center mb-3">
+          <h3 className="text-sm font-semibold text-muted-foreground">Order Book</h3>
         </div>
 
-            {/* CALL Section - Vai subir */}
-            <div className="mb-4">
-              <div className="flex items-center justify-between mb-2">
-                <Badge className="bg-success text-white px-3 py-1">CALL - Vai Subir ↗</Badge>
-                <span className="text-xs text-muted-foreground">Apostas/Valor</span>
-              </div>
-              <div className="space-y-1">
-                {orders.slice(0, 4).map((order, index) => {
-                  const callWidth = Math.max((order.callAmount / maxAmount) * 100, 15); // Mínimo 15%
-                  return (
-                    <div key={`call-${index}`} className="flex items-center gap-2 text-xs h-6">
-                      <span className="text-muted-foreground text-[10px] w-14">{order.time}</span>
-                      <div className="flex-1 relative">
-                        <div
-                          className="h-5 bg-green-500/70 border border-green-500 transition-all rounded"
-                          style={{ width: `${callWidth}%` }}
-                        />
-                        <div className="absolute inset-0 flex items-center justify-between px-2">
-                          <span className="text-success font-bold text-[10px]">{order.callCount}</span>
-                          <span className="text-success font-bold text-[10px]">${order.callAmount}</span>
-                        </div>
-                      </div>
+        <div className="flex-1 flex flex-col space-y-3">
+          {/* CALL Section - Green orders */}
+          <div className="space-y-1">
+            {callOrders.map((order) => {
+              const width = (order.count * 15) + 30; // Width based on count
+              return (
+                <div key={`call-${order.id}`} className="flex items-center gap-2 text-xs">
+                  <span className="text-green-400 font-bold w-4 text-left">{order.count}</span>
+                  <div className="flex-1 relative">
+                    <div
+                      className="h-5 bg-green-600/90 rounded transition-all flex items-center justify-end pr-2"
+                      style={{ width: `${Math.min(width, 95)}%` }}
+                    >
+                      <span className="text-white text-xs font-medium">{order.time}</span>
                     </div>
-                  );
-                })}
-              </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Middle Section - VS */}
+          <div className="border border-border/50 rounded-lg p-2">
+            <div className="flex items-center justify-between text-center">
+              <span className="text-green-400 font-bold text-sm">${callTotal.toFixed(2)}</span>
+              <span className="text-muted-foreground text-xs font-bold">VS</span>
+              <span className="text-red-400 font-bold text-sm">${putTotal.toFixed(2)}</span>
             </div>
+          </div>
 
-            {/* Divider */}
-            <div className="border-t border-border/50 my-3"></div>
-
-            {/* PUT Section - Vai cair */}
-            <div className="mb-4">
-              <div className="flex items-center justify-between mb-2">
-                <Badge className="bg-destructive text-white px-3 py-1">PUT - Vai Cair ↘</Badge>
-                <span className="text-xs text-muted-foreground">Apostas/Valor</span>
-              </div>
-              <div className="space-y-1">
-                {orders.slice(4, 8).map((order, index) => {
-                  const putWidth = Math.max((order.putAmount / maxAmount) * 100, 15); // Mínimo 15%
-                  return (
-                    <div key={`put-${index}`} className="flex items-center gap-2 text-xs h-6">
-                      <span className="text-muted-foreground text-[10px] w-14">{order.time}</span>
-                      <div className="flex-1 relative">
-                        <div
-                          className="h-5 bg-destructive/60 border border-destructive/80 transition-all rounded"
-                          style={{ width: `${putWidth}%` }}
-                        />
-                        <div className="absolute inset-0 flex items-center justify-between px-2">
-                          <span className="text-destructive font-bold text-[10px]">{order.putCount}</span>
-                          <span className="text-destructive font-bold text-[10px]">${order.putAmount}</span>
-                        </div>
-                      </div>
+          {/* PUT Section - Red orders */}
+          <div className="space-y-1">
+            {putOrders.map((order) => {
+              const width = (order.count * 15) + 30; // Width based on count
+              return (
+                <div key={`put-${order.id}`} className="flex items-center gap-2 text-xs">
+                  <span className="text-red-400 font-bold w-4 text-left">{order.count}</span>
+                  <div className="flex-1 relative">
+                    <div
+                      className="h-5 bg-red-600/90 rounded transition-all flex items-center justify-end pr-2"
+                      style={{ width: `${Math.min(width, 95)}%` }}
+                    >
+                      <span className="text-white text-xs font-medium">{order.time}</span>
                     </div>
-                  );
-                })}
-              </div>
-            </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
 
-        <div className="pt-3 border-t border-border/50 text-center">
-          <span className="text-xs text-success font-semibold">AI ORDER EQUALIZER</span>
+          {/* Footer */}
+          <div className="text-center mt-auto">
+            <span className="text-xs text-blue-400 font-semibold">AI EQUALIZER ORDER</span>
+          </div>
         </div>
       </Card>
     </div>

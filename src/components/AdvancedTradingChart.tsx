@@ -27,18 +27,36 @@ interface CandleData {
 const generateHistoricalData = (currentPrice: number, timeframeMinutes: number = 1, count: number = 100): CandleData[] => {
   const data: CandleData[] = [];
   const now = Date.now();
-  let price = currentPrice * 0.95;
+
+  // Start from a price close to current and gradually move towards it
+  let price = currentPrice * 0.995; // Start very close to current price
+  const targetPrice = currentPrice;
+  const priceStep = (targetPrice - price) / count; // Gradual movement towards current price
 
   for (let i = count; i > 0; i--) {
     const time = Math.floor((now - i * timeframeMinutes * 60 * 1000) / 1000);
     const open = price;
 
-    const volatility = currentPrice * 0.002;
-    const change = (Math.random() - 0.5) * volatility * 2;
-    const close = Math.max(open * 0.98, Math.min(open * 1.02, open + change));
+    // Very small volatility for smooth movement
+    const volatility = currentPrice * 0.0005;
+    const change = (Math.random() - 0.5) * volatility;
 
-    const high = Math.max(open, close) + Math.random() * volatility * 0.5;
-    const low = Math.min(open, close) - Math.random() * volatility * 0.5;
+    // Move gradually towards target price
+    let close = open + change + priceStep;
+
+    // For the last few candles, get very close to current price
+    if (i <= 3) {
+      close = targetPrice + (Math.random() - 0.5) * volatility * 0.5;
+    }
+
+    // Keep within reasonable bounds
+    close = Math.max(open * 0.999, Math.min(open * 1.001, close));
+
+    const highVariation = Math.random() * volatility * 0.2;
+    const lowVariation = Math.random() * volatility * 0.2;
+
+    const high = Math.max(open, close) + highVariation;
+    const low = Math.min(open, close) - lowVariation;
 
     const volume = 1000 + Math.random() * 2000;
 
@@ -70,40 +88,90 @@ export const AdvancedTradingChart = ({
 
   const [candleData, setCandleData] = useState<CandleData[]>([]);
   const [chartType, setChartType] = useState<'candlestick' | 'line' | 'area'>(propChartType);
+  const [themeKey, setThemeKey] = useState(0); // Force re-render on theme change
 
   useEffect(() => {
     setChartType(propChartType);
   }, [propChartType]);
 
+  // Watch for theme changes
+  useEffect(() => {
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+          setThemeKey(prev => prev + 1); // Force re-render
+        }
+      });
+    });
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class']
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
   useEffect(() => {
     if (!priceData) return;
 
-    // Generate initial historical data or regenerate when timeframe changes
-    const historicalData = generateHistoricalData(priceData.price, timeframe);
-    setCandleData(historicalData);
+    // Only generate historical data once when we first get price data
+    if (candleData.length === 0) {
+      const historicalData = generateHistoricalData(priceData.price, timeframe);
+      setCandleData(historicalData);
+    }
   }, [priceData, timeframe]);
 
   useEffect(() => {
     if (!chartContainerRef.current || candleData.length === 0) return;
 
-    // Create chart using TradingView style
+    // Get CSS custom properties for current theme
+    const styles = getComputedStyle(document.documentElement);
+    const chartBg = styles.getPropertyValue('--chart').trim();
+    const gridColor = styles.getPropertyValue('--grid').trim();
+    const textColor = styles.getPropertyValue('--muted-foreground').trim();
+
+    // Check if current theme is light (default theme)
+    const classList = Array.from(document.documentElement.classList);
+    const isLightTheme = !classList.some(cls => cls.includes('dark') || cls.includes('neon') || cls.includes('cyberpunk'));
+
+    console.log('Theme detection:', {
+      isLightTheme,
+      classList,
+      chartBg,
+      gridColor,
+      textColor
+    });
+
+    // Use specific light/dark colors based on theme
+    const backgroundColor = isLightTheme ? '#FFFFFF' : '#131722';
+    const gridLineColor = isLightTheme ? '#F0F0F0' : '#363A45';
+    const chartTextColor = isLightTheme ? '#333333' : '#9598A1';
+
+    // Create chart using theme colors
     const chart = createChart(chartContainerRef.current, {
       layout: {
-        background: { type: ColorType.Solid, color: '#131722' },
-        textColor: '#9598A1',
+        background: { type: ColorType.Solid, color: backgroundColor },
+        textColor: chartTextColor,
         fontSize: 11,
         fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif',
       },
+      handleScroll: {
+        mouseWheel: true,
+        pressedMouseMove: true,
+        horzTouchDrag: true,
+        vertTouchDrag: true,
+      },
       width: chartContainerRef.current.clientWidth,
-      height: 400,
+      height: chartContainerRef.current.clientHeight,
       grid: {
         vertLines: {
-          color: '#363A45',
+          color: gridLineColor,
           style: 2,
           visible: true,
         },
         horzLines: {
-          color: '#363A45',
+          color: gridLineColor,
           style: 2,
           visible: true,
         },
@@ -111,28 +179,39 @@ export const AdvancedTradingChart = ({
       crosshair: {
         mode: 1,
         vertLine: {
-          color: '#9598A1',
+          color: chartTextColor,
           width: 1,
           style: 3,
         },
         horzLine: {
-          color: '#9598A1',
+          color: chartTextColor,
           width: 1,
           style: 3,
         },
       },
+      leftPriceScale: {
+        visible: false,
+        borderVisible: false,
+      },
       rightPriceScale: {
-        borderColor: '#363A45',
-        textColor: '#9598A1',
+        borderColor: gridLineColor,
+        textColor: chartTextColor,
+        width: 60,
         scaleMargins: {
-          top: 0.08,
-          bottom: 0.05,
+          top: 0.005,
+          bottom: 0.005,
         },
       },
       timeScale: {
-        borderColor: '#363A45',
+        borderColor: gridLineColor,
         timeVisible: true,
         secondsVisible: false,
+        rightOffset: 0,
+        leftOffset: 0,
+        barSpacing: 8,
+        minBarSpacing: 1,
+        fixLeftEdge: true,
+        fixRightEdge: false,
         tickMarkFormatter: (time: any) => {
           const date = new Date(time * 1000);
           return date.toLocaleDateString('en-US', { month: 'short' });
@@ -188,11 +267,15 @@ export const AdvancedTradingChart = ({
 
     mainSeries.setData(chartData);
 
+    // Força o gráfico a usar toda a largura disponível
+    chart.timeScale().fitContent();
+
     // Handle resize
     const handleResize = () => {
       if (chartContainerRef.current) {
         chart.applyOptions({
           width: chartContainerRef.current.clientWidth,
+          height: chartContainerRef.current.clientHeight,
         });
       }
     };
@@ -203,32 +286,65 @@ export const AdvancedTradingChart = ({
       window.removeEventListener('resize', handleResize);
       chart.remove();
     };
-  }, [candleData, chartType]);
+  }, [candleData, chartType, propChartType, themeKey]);
 
-  // Update current price
+  // Update current price - create new candle every minute with real price
   useEffect(() => {
-    if (!priceData || !candlestickSeriesRef.current) return;
+    if (!priceData || !candlestickSeriesRef.current || candleData.length === 0) return;
 
-    const now = Math.floor(Date.now() / 1000);
     const lastCandle = candleData[candleData.length - 1];
+    const newPrice = priceData.price;
+    const currentTime = Math.floor(Date.now() / (60 * 1000)) * 60; // Current minute timestamp
 
-    if (lastCandle) {
-      const newPrice = priceData.price;
-      const updatedCandle = {
-        time: now,
-        open: lastCandle.close,
-        high: Math.max(lastCandle.close, newPrice),
-        low: Math.min(lastCandle.close, newPrice),
-        close: newPrice,
-      };
+    // Only update if price change is reasonable (within 2% of last price)
+    if (lastCandle && Math.abs(newPrice - lastCandle.close) / lastCandle.close < 0.02) {
 
-      if (chartType === 'candlestick') {
-        candlestickSeriesRef.current.update(updatedCandle);
+      // If it's a new minute, create a new candle
+      if (currentTime > lastCandle.time) {
+        const newCandle = {
+          time: currentTime,
+          open: lastCandle.close,
+          high: Math.max(lastCandle.close, newPrice),
+          low: Math.min(lastCandle.close, newPrice),
+          close: newPrice,
+        };
+
+        if (chartType === 'candlestick') {
+          candlestickSeriesRef.current.update(newCandle);
+        } else {
+          candlestickSeriesRef.current.update({
+            time: currentTime,
+            value: newPrice,
+          });
+        }
+
+        // Update our local data
+        setCandleData(prev => [...prev, {
+          time: currentTime,
+          open: lastCandle.close,
+          high: Math.max(lastCandle.close, newPrice),
+          low: Math.min(lastCandle.close, newPrice),
+          close: newPrice,
+          volume: 1000 + Math.random() * 2000
+        }]);
       } else {
-        candlestickSeriesRef.current.update({
-          time: now,
-          value: newPrice,
-        });
+        // Update current candle
+        const updatedCandle = {
+          time: lastCandle.time,
+          open: lastCandle.open,
+          high: Math.max(lastCandle.open, lastCandle.high, newPrice),
+          low: Math.min(lastCandle.open, lastCandle.low, newPrice),
+          close: newPrice,
+        };
+
+        if (chartType === 'candlestick') {
+          candlestickSeriesRef.current.update(updatedCandle);
+        } else {
+          candlestickSeriesRef.current.update({
+            time: lastCandle.time,
+            value: newPrice,
+          });
+        }
       }
     }
   }, [priceData, chartType, candleData]);
@@ -244,26 +360,32 @@ export const AdvancedTradingChart = ({
 
   const { change, percentage } = calculateChange();
 
+  // Check if current theme is light for Card styling
+  const classList = Array.from(document.documentElement.classList);
+  const isLightTheme = !classList.some(cls => cls.includes('dark') || cls.includes('neon') || cls.includes('cyberpunk'));
+  const cardClass = isLightTheme ? "bg-white border-gray-300" : "bg-card border-border";
+  const headerClass = isLightTheme ? "bg-white border-gray-300" : "bg-card border-border";
+
   return (
-    <Card className="bg-[#131722] border-[#363A45] overflow-hidden h-full flex flex-col">
+    <Card className={`${cardClass} overflow-hidden h-full flex flex-col p-0`}>
       {/* TradingView Style Header */}
-      <div className="p-3 border-b border-[#363A45] flex-shrink-0 bg-[#131722]">
+      <div className={`p-2 border-b ${headerClass} flex-shrink-0`}>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
-            <span className="text-white font-bold text-lg">{asset}</span>
-            <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-[#26a69a]' : 'bg-[#ef5350]'}`}></div>
+            <span className="text-foreground font-bold text-lg">{asset}</span>
+            <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'}`}></div>
           </div>
           {priceData && (
             <div className="flex items-center gap-4 text-sm">
-              <span className="text-[#9598A1]">O</span>
-              <span className="text-[#9598A1]">{formatPrice(candleData[0]?.open || priceData.price)}</span>
-              <span className="text-[#9598A1]">H</span>
-              <span className="text-[#9598A1]">{formatPrice(Math.max(...candleData.map(d => d.high), priceData.price))}</span>
-              <span className="text-[#9598A1]">L</span>
-              <span className="text-[#9598A1]">{formatPrice(Math.min(...candleData.map(d => d.low), priceData.price))}</span>
-              <span className="text-[#9598A1]">C</span>
-              <span className="text-white font-bold">{formatPrice(priceData.price)}</span>
-              <span className={`${change >= 0 ? 'text-[#26a69a]' : 'text-[#ef5350]'}`}>
+              <span className="text-muted-foreground">O</span>
+              <span className="text-muted-foreground">{formatPrice(candleData[0]?.open || priceData.price)}</span>
+              <span className="text-muted-foreground">H</span>
+              <span className="text-muted-foreground">{formatPrice(Math.max(...candleData.map(d => d.high), priceData.price))}</span>
+              <span className="text-muted-foreground">L</span>
+              <span className="text-muted-foreground">{formatPrice(Math.min(...candleData.map(d => d.low), priceData.price))}</span>
+              <span className="text-muted-foreground">C</span>
+              <span className="text-foreground font-bold">{formatPrice(priceData.price)}</span>
+              <span className={`${change >= 0 ? 'text-green-500' : 'text-red-500'}`}>
                 {change >= 0 ? '+' : ''}{formatPrice(change)} ({percentage >= 0 ? '+' : ''}{percentage.toFixed(2)}%)
               </span>
             </div>
@@ -272,26 +394,26 @@ export const AdvancedTradingChart = ({
       </div>
 
       {/* Chart */}
-      <div className="flex-1 flex flex-col min-h-0 bg-[#131722]">
+      <div className={`flex-1 flex flex-col min-h-0 ${cardClass}`}>
         {/* Main Price Chart */}
         <div className="flex-1 min-h-0">
-          <div ref={chartContainerRef} className="w-full h-full" />
+          <div ref={chartContainerRef} className="w-full h-full relative" />
         </div>
 
         {/* TradingView Style Bottom Bar */}
-        <div className="border-t border-[#363A45] bg-[#131722] p-2 flex items-center justify-between">
+        <div className={`border-t ${headerClass} p-1 flex items-center justify-between`}>
           {/* Asset and Timeframe Display (Fixed) */}
           <div className="flex items-center gap-4">
-            <div className="text-[#9598A1] text-xs">
-              <span className="text-white font-medium">BTC/USD</span>
+            <div className="text-muted-foreground text-xs">
+              <span className="text-foreground font-medium">BTC/USD</span>
             </div>
-            <div className="text-[#9598A1] text-xs">
-              <span className="text-white font-medium">1m</span>
+            <div className="text-muted-foreground text-xs">
+              <span className="text-foreground font-medium">1m</span>
             </div>
           </div>
 
           {/* Right side info */}
-          <div className="flex items-center gap-4 text-xs text-[#9598A1]">
+          <div className="flex items-center gap-4 text-xs text-muted-foreground">
             <span>{new Date().toLocaleTimeString('pt-BR')} (UTC)</span>
           </div>
         </div>

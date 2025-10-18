@@ -1,12 +1,12 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowUp, ArrowDown, Clock, DollarSign, Plus, Minus } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Direction } from '@/types/trading';
 import { useToast } from '@/hooks/use-toast';
-import { OrderBook } from '@/components/OrderBook';
+import { useLanguage } from '@/hooks/useLanguage';
+import { useTranslation } from '@/translations';
 
 interface DuelPanelProps {
   asset: string;
@@ -23,7 +23,8 @@ interface DuelPanelProps {
     status: 'pending' | 'accepted' | 'rejected';
   }>;
   availableLiquidity?: number;
-  onScanComplete?: (acceptedBets: any[], rejectedBets: any[]) => void;
+  onRoundComplete?: () => void;
+  onEqualizerActivate?: () => void;
 }
 
 export const DuelPanel = ({
@@ -34,10 +35,42 @@ export const DuelPanel = ({
   isEqualizerActive = false,
   bets = [],
   availableLiquidity = 10000,
-  onScanComplete
+  onRoundComplete,
+  onEqualizerActivate
 }: DuelPanelProps) => {
   const [amount, setAmount] = useState<string>('10');
+  const [timeLeft, setTimeLeft] = useState(60); // Timer de 1 minuto
   const { toast } = useToast();
+  const { language } = useLanguage();
+  const t = useTranslation(language);
+
+  // Timer de 1 minuto rodando automaticamente
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeLeft(prev => {
+        if (prev === 5 && isActive) {
+          // Ativar AI Equalizer nos últimos 5 segundos usando setTimeout para evitar setState durante render
+          setTimeout(() => {
+            onEqualizerActivate?.();
+          }, 0);
+        }
+
+        if (prev <= 1) {
+          // Timer chegou a zero
+          if (isActive) {
+            // Se há apostas ativas, processar resultados usando setTimeout
+            setTimeout(() => {
+              onRoundComplete?.();
+            }, 0);
+          }
+          return 60; // Reset para próxima rodada
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [isActive, onRoundComplete, onEqualizerActivate]);
 
   const handleStartDuel = (direction: Direction) => {
     const numAmount = parseFloat(amount);
@@ -63,8 +96,11 @@ export const DuelPanel = ({
     onStartDuel(direction, numAmount);
   };
 
-  const fee = parseFloat(amount) * 0.05;
-  const total = parseFloat(amount) + fee;
+  // Cálculos baseados no amount
+  const numAmount = parseFloat(amount) || 0;
+  const fee = numAmount * 0.05; // Taxa de 5%
+  const payout = numAmount - fee; // $9.50 no exemplo (10 - 0.50)
+  const winner = numAmount * 2; // $19 no exemplo (10 * 2 - taxa)
 
   const incrementAmount = () => {
     const current = parseFloat(amount) || 0;
@@ -78,133 +114,103 @@ export const DuelPanel = ({
     setAmount(newAmount.toString());
   };
 
-  const handleQuickAmount = (value: number) => {
-    setAmount(value.toString());
+  // Formatar timer para mostrar minutos:segundos
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return { mins: mins.toString().padStart(2, '0'), secs: secs.toString().padStart(2, '0') };
   };
 
+  const { mins, secs } = formatTime(timeLeft);
+
   return (
-    <div className="space-y-4">
-      <Card className="bg-background border-border/50 p-6">
-        <div className="space-y-4">
-          <div className="space-y-3">
-            <label className="text-sm text-muted-foreground flex items-center gap-2">
-              <DollarSign className="w-4 h-4" />
-              Valor da Aposta
-            </label>
+    <Card className="bg-background border-border/50 p-3 h-full flex flex-col">
+      {/* Header */}
+      <div className="text-center mb-3">
+        <h3 className="text-sm font-semibold text-muted-foreground">{t('placeOrder')}</h3>
+      </div>
 
-            {/* Input com botões + e - */}
-            <div className="relative">
-              <Button
-                variant="outline"
-                size="icon"
-                className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10 h-12 w-12 rounded-full"
-                onClick={decrementAmount}
-                disabled={isActive || parseFloat(amount) <= 1}
-                type="button"
-              >
-                <Minus className="w-4 h-4" />
-              </Button>
+      {/* Timer */}
+      <div className="flex items-center justify-center gap-1 mb-4">
+        <span className="text-2xl font-bold text-foreground">
+          {mins}:{secs}
+        </span>
+      </div>
 
-              <Input
-                type="number"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                disabled={isActive}
-                className="text-3xl font-bold h-16 text-center bg-muted/50 border-border/50 px-16 cursor-text"
-                min="1"
-                max="1000"
-                step="1"
-                placeholder="Digite o valor..."
-              />
+      {/* Amount Section */}
+      <div className="mb-4">
+        <label className="text-xs text-muted-foreground mb-2 block">{t('amount')}</label>
+        <div className="relative">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="absolute left-1 top-1/2 transform -translate-y-1/2 z-10 h-6 w-6 text-muted-foreground hover:text-foreground"
+            onClick={decrementAmount}
+            disabled={isActive || parseFloat(amount) <= 1}
+            type="button"
+          >
+            <ChevronLeft className="w-4 h-4" />
+          </Button>
 
-              <Button
-                variant="outline"
-                size="icon"
-                className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10 h-12 w-12 rounded-full"
-                onClick={incrementAmount}
-                disabled={isActive || parseFloat(amount) >= 1000}
-                type="button"
-              >
-                <Plus className="w-4 h-4" />
-              </Button>
-            </div>
-
-            {/* Botões de valores rápidos */}
-            <div className="flex gap-2 justify-center">
-              {[5, 10, 25, 50, 100].map((value) => (
-                <Button
-                  key={value}
-                  variant="ghost"
-                  size="sm"
-                  className="text-xs px-3 py-1 h-7 bg-muted/30 hover:bg-muted/60"
-                  onClick={() => handleQuickAmount(value)}
-                  disabled={isActive}
-                  type="button"
-                >
-                  ${value}
-                </Button>
-              ))}
-            </div>
-
-            <div className="flex justify-between text-xs text-muted-foreground">
-              <span>Taxa (5%): ${fee.toFixed(2)}</span>
-              <span>Total: ${total.toFixed(2)}</span>
-            </div>
+          <div className="border border-border/50 rounded px-8 py-2 text-center">
+            <span className="text-2xl font-bold">{amount}</span>
           </div>
 
-          <div className="space-y-2">
-            <label className="text-sm text-muted-foreground flex items-center gap-2">
-              <Clock className="w-4 h-4" />
-              Duration
-            </label>
-            <div className="px-3 py-2 bg-muted/50 border border-border/50 rounded text-sm font-medium text-center">
-              1 minuto (fixo)
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
-            <Button
-              onClick={() => handleStartDuel('CALL')}
-              disabled={isActive}
-              className="h-32 bg-green-600 hover:bg-green-700 text-white transition-all disabled:opacity-50"
-            >
-              <div className="flex flex-col items-center gap-2">
-                <ArrowUp className="w-10 h-10" />
-                <div className="space-y-1">
-                  <div className="font-bold text-2xl">CALL</div>
-                  <div className="text-xs opacity-90">Preço vai subir ↗</div>
-                </div>
-              </div>
-            </Button>
-
-            <Button
-              onClick={() => handleStartDuel('PUT')}
-              disabled={isActive}
-              className="h-32 bg-red-600 hover:bg-red-700 text-white transition-all disabled:opacity-50"
-            >
-              <div className="flex flex-col items-center gap-2">
-                <ArrowDown className="w-10 h-10" />
-                <div className="space-y-1">
-                  <div className="font-bold text-2xl">PUT</div>
-                  <div className="text-xs opacity-90">Preço vai cair ↘</div>
-                </div>
-              </div>
-            </Button>
-          </div>
-
-          {isActive && (
-            <div className="text-center text-sm text-muted-foreground animate-pulse">
-              Duel in progress...
-            </div>
-          )}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="absolute right-1 top-1/2 transform -translate-y-1/2 z-10 h-6 w-6 text-muted-foreground hover:text-foreground"
+            onClick={incrementAmount}
+            disabled={isActive || parseFloat(amount) >= 1000}
+            type="button"
+          >
+            <ChevronRight className="w-4 h-4" />
+          </Button>
         </div>
-      </Card>
+      </div>
 
-      <OrderBook
-        isScanActive={isEqualizerActive}
-        userBetAmount={bets.find(bet => bet.username === 'Você')?.amount || 0}
-        wasUserBetAccepted={true} // Sempre aceitar para simplicidade
-      />
-    </div>
+      {/* Rate and Values */}
+      <div className="mb-4 space-y-2">
+        <div className="text-xs text-muted-foreground">
+          {t('rate')}: ${fee.toFixed(2)}
+        </div>
+
+        <div className="grid grid-cols-2 gap-2">
+          <div className="border border-border/50 rounded p-2 text-center">
+            <div className="text-lg font-bold">${payout.toFixed(2)}</div>
+            <div className="text-[10px] text-muted-foreground">{t('payout')}</div>
+          </div>
+          <div className="border border-border/50 rounded p-2 text-center">
+            <div className="text-lg font-bold">${winner.toFixed(0)}</div>
+            <div className="text-[10px] text-muted-foreground">{t('winner')}</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Action Buttons */}
+      <div className="grid grid-cols-2 gap-2 flex-1">
+        <Button
+          onClick={() => handleStartDuel('CALL')}
+          disabled={isActive}
+          className="h-12 btn-success-theme disabled:opacity-50 rounded text-lg font-bold"
+        >
+          {t('green')}
+        </Button>
+
+        <Button
+          onClick={() => handleStartDuel('PUT')}
+          disabled={isActive}
+          className="h-12 btn-destructive-theme disabled:opacity-50 rounded text-lg font-bold"
+        >
+          {t('red')}
+        </Button>
+      </div>
+
+      {isEqualizerActive && (
+        <div className="text-center text-xs text-blue-400 animate-pulse mt-2">
+          {t('equalizerActive')}
+        </div>
+      )}
+    </Card>
   );
 };

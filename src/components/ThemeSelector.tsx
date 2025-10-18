@@ -87,7 +87,7 @@ export const ThemeSelector = ({ currentTheme, onThemeChange }: ThemeSelectorProp
   }
 
   return (
-    <Card className="fixed top-4 right-4 w-80 bg-background/95 backdrop-blur border-border/50 shadow-xl z-50">
+    <Card className="fixed top-4 right-4 w-80 bg-background/95 backdrop-blur border-border/50 z-50">
       <div className="p-4">
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-semibold text-sm">Escolher Tema</h3>
@@ -107,7 +107,7 @@ export const ThemeSelector = ({ currentTheme, onThemeChange }: ThemeSelectorProp
               key={theme.id}
               className={`cursor-pointer p-3 rounded-lg border-2 transition-all hover:scale-105 ${
                 currentTheme === theme.id
-                  ? 'border-primary shadow-lg'
+                  ? 'border-primary'
                   : 'border-border/50 hover:border-border'
               }`}
               onClick={() => {

@@ -71,7 +71,7 @@ export const QuickChat = () => {
 
       <Button
         onClick={() => setIsOpen(!isOpen)}
-        className="rounded-full w-12 h-12 shadow-lg"
+        className="rounded-full w-12 h-12"
         size="icon"
       >
         <MessageSquare className="w-5 h-5" />

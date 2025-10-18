@@ -1,7 +1,10 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Button } from '@/components/ui/button';
 import { ThemeOption } from '@/components/ThemeSelector';
-import { Palette, User, History, Wallet, LogOut, ArrowDownToLine, ArrowUpFromLine } from 'lucide-react';
+import { Palette, User, History, Wallet, LogOut, ArrowDownToLine, ArrowUpFromLine, Globe } from 'lucide-react';
 import { useRealPrice } from '@/hooks/useRealPrice';
+import { useLanguage, Language } from '@/hooks/useLanguage';
+import { useTranslation } from '@/translations';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,6 +26,8 @@ export const Header = ({
 }: HeaderProps) => {
   const navigate = useNavigate();
   const { price: realBtcPrice, isLoading } = useRealPrice('BTCUSDT');
+  const { language, setLanguage } = useLanguage();
+  const t = useTranslation(language);
 
   const themes = [
     { value: 'default', label: 'Padrão' },
@@ -36,23 +41,44 @@ export const Header = ({
   ];
 
   return (
-    <header className="bg-background border-b border-border/50 px-6 py-4">
+    <header className="bg-background border-b border-border/50 px-6 py-2">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-8">
+        <div className="flex items-center gap-6">
           <img
             src="https://flyughatwfagmonhnmby.supabase.co/storage/v1/object/sign/Arquivos/Logo%20.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV84MDBiZWRmZi02N2IwLTRjMjEtYjQ4Ny00ZTc1YzhhZWEwYTEiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJBcnF1aXZvcy9Mb2dvIC5wbmciLCJpYXQiOjE3NjA1MDIzMzUsImV4cCI6MjA3NTg2MjMzNX0.8YZ5W0Y-mit3FneDxYSh03YiZ0Ulz0VsDi4NKqN9Cvs"
             alt="OBNESS Logo"
-            className="h-12 w-auto"
+            className="h-12 w-auto cursor-pointer hover:opacity-80 transition-opacity drop-shadow-sm"
+            onClick={() => window.location.reload()}
           />
 
           <div className="flex items-center gap-4">
-            <div className="text-sm text-muted-foreground">Tema</div>
+            <div className="text-label-xs text-primary">{t('asset')}</div>
+            <div className="text-body-sm font-semibold border border-border/50 rounded px-3 py-1">BTC/USDT</div>
+          </div>
+
+          <div className="flex items-center gap-4">
+            <div className="text-label-xs text-primary">{t('timeframe')}</div>
+            <div className="text-body-sm font-semibold border border-border/50 rounded px-3 py-1">1 MINUTE</div>
+          </div>
+
+          <div className="flex items-center gap-4">
+            <div className="text-label-xs text-primary">{t('btcPrice')}</div>
+            <div className="text-body-sm font-semibold text-green-500">
+              {isLoading ? (
+                <span className="animate-pulse">{t('loading')}</span>
+              ) : (
+                `$${realBtcPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4">
+            <div className="text-label-xs text-primary">{t('theme')}</div>
             <Select value={currentTheme} onValueChange={onThemeChange}>
-              <SelectTrigger className="w-[140px] bg-muted/50 border-border/50">
-                <div className="flex items-center gap-2">
-                  <Palette className="w-4 h-4" />
-                  <SelectValue />
-                </div>
+              <SelectTrigger className="w-[100px] bg-muted/50 border-border/50 h-8">
+                <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 {themes.map((theme) => (
@@ -63,27 +89,57 @@ export const Header = ({
               </SelectContent>
             </Select>
           </div>
-        </div>
 
-        <div className="flex items-center gap-6">
-          <div className="text-right">
-            <div className="text-xs text-muted-foreground">BTC/USDT</div>
-            <div className="text-xl font-bold text-[#26a69a]">
-              {isLoading ? (
-                <span className="animate-pulse">Loading...</span>
-              ) : (
-                `$${realBtcPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
-              )}
-            </div>
+          <div className="flex items-center gap-4">
+            <div className="text-label-xs text-primary">{t('realBalance')}</div>
+            <div className="text-body-lg font-bold text-foreground">$100.50</div>
           </div>
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
+              <Button className="w-8 h-8 p-0" variant="outline">
+                <Globe className="w-4 h-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-40">
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onClick={() => setLanguage('pt')}
+              >
+                <span className={language === 'pt' ? 'font-bold' : ''}>
+                  🇧🇷 {t('languages').pt}
+                </span>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onClick={() => setLanguage('en')}
+              >
+                <span className={language === 'en' ? 'font-bold' : ''}>
+                  🇺🇸 {t('languages').en}
+                </span>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onClick={() => setLanguage('es')}
+              >
+                <span className={language === 'es' ? 'font-bold' : ''}>
+                  🇪🇸 {t('languages').es}
+                </span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          <Button className="btn-primary-theme px-4 py-2 text-sm">
+            {t('deposit')}
+          </Button>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
               <button className="focus:outline-none">
-                <Avatar className="w-12 h-12 cursor-pointer hover:opacity-80 transition-opacity">
+                <Avatar className="w-8 h-8 cursor-pointer hover:opacity-80 transition-opacity">
                   <AvatarImage src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face" alt="User" />
                   <AvatarFallback className="bg-success text-background">
-                    <User className="w-6 h-6" />
+                    <User className="w-4 h-4" />
                   </AvatarFallback>
                 </Avatar>
               </button>
@@ -91,25 +147,25 @@ export const Header = ({
             <DropdownMenuContent align="end" className="w-56">
               <DropdownMenuItem className="cursor-pointer" onClick={() => navigate('/minha-conta')}>
                 <User className="mr-2 h-4 w-4" />
-                <span>MINHA CONTA</span>
+                <span>{t('myAccount')}</span>
               </DropdownMenuItem>
               <DropdownMenuItem className="cursor-pointer" onClick={() => navigate('/historico')}>
                 <History className="mr-2 h-4 w-4" />
-                <span>HISTÓRICO</span>
+                <span>{t('history')}</span>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem className="cursor-pointer" onClick={() => navigate('/deposito')}>
                 <ArrowDownToLine className="mr-2 h-4 w-4" />
-                <span>DEPOSITAR</span>
+                <span>{t('deposit')}</span>
               </DropdownMenuItem>
               <DropdownMenuItem className="cursor-pointer" onClick={() => navigate('/saque')}>
                 <ArrowUpFromLine className="mr-2 h-4 w-4" />
-                <span>SACAR</span>
+                <span>{t('withdraw')}</span>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem className="cursor-pointer text-destructive focus:text-destructive">
                 <LogOut className="mr-2 h-4 w-4" />
-                <span>DESLOGAR</span>
+                <span>{t('logout')}</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

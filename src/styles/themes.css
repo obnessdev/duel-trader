@@ -23,6 +23,12 @@
   --chart: 210 40% 98%;
   --grid: 210 40% 94%;
   --success: 142.1 76.2% 36.3%;
+  --button-success: 142.1 76.2% 36.3%;
+  --button-success-hover: 142.1 76.2% 32%;
+  --button-destructive: 0 84.2% 60.2%;
+  --button-destructive-hover: 0 84.2% 55%;
+  --button-primary: 220 14.3% 95.9%;
+  --button-primary-hover: 220 14.3% 90%;
 }
 
 /* Tema Escuro */
@@ -50,6 +56,12 @@
   --chart: 217.2 32.6% 15%;
   --grid: 217.2 32.6% 20%;
   --success: 142.1 76.2% 36.3%;
+  --button-success: 142.1 76.2% 36.3%;
+  --button-success-hover: 142.1 76.2% 32%;
+  --button-destructive: 0 62.8% 30.6%;
+  --button-destructive-hover: 0 62.8% 25%;
+  --button-primary: 210 40% 98%;
+  --button-primary-hover: 210 40% 93%;
 }
 
 /* Tema Neon Verde */
@@ -77,6 +89,12 @@
   --chart: 120 100% 4%;
   --grid: 120 100% 12%;
   --success: 120 100% 50%;
+  --button-success: 120 100% 40%;
+  --button-success-hover: 120 100% 35%;
+  --button-destructive: 0 100% 40%;
+  --button-destructive-hover: 0 100% 35%;
+  --button-primary: 120 100% 50%;
+  --button-primary-hover: 120 100% 45%;
 }
 
 /* Tema Neon Azul */
@@ -104,6 +122,12 @@
   --chart: 200 100% 4%;
   --grid: 180 100% 12%;
   --success: 120 100% 50%;
+  --button-success: 120 100% 40%;
+  --button-success-hover: 120 100% 35%;
+  --button-destructive: 0 100% 40%;
+  --button-destructive-hover: 0 100% 35%;
+  --button-primary: 180 100% 50%;
+  --button-primary-hover: 180 100% 45%;
 }
 
 /* Tema Neon Roxo */
@@ -131,6 +155,12 @@
   --chart: 270 100% 4%;
   --grid: 270 100% 12%;
   --success: 120 100% 50%;
+  --button-success: 120 100% 40%;
+  --button-success-hover: 120 100% 35%;
+  --button-destructive: 0 100% 40%;
+  --button-destructive-hover: 0 100% 35%;
+  --button-primary: 270 100% 50%;
+  --button-primary-hover: 270 100% 45%;
 }
 
 /* Tema Neon Rosa */
@@ -158,6 +188,12 @@
   --chart: 320 100% 4%;
   --grid: 320 100% 12%;
   --success: 120 100% 50%;
+  --button-success: 120 100% 40%;
+  --button-success-hover: 120 100% 35%;
+  --button-destructive: 0 100% 40%;
+  --button-destructive-hover: 0 100% 35%;
+  --button-primary: 320 100% 50%;
+  --button-primary-hover: 320 100% 45%;
 }
 
 /* Tema Neon Laranja */
@@ -185,6 +221,12 @@
   --chart: 30 100% 4%;
   --grid: 30 100% 12%;
   --success: 120 100% 50%;
+  --button-success: 120 100% 40%;
+  --button-success-hover: 120 100% 35%;
+  --button-destructive: 0 100% 40%;
+  --button-destructive-hover: 0 100% 35%;
+  --button-primary: 30 100% 50%;
+  --button-primary-hover: 30 100% 45%;
 }
 
 /* Tema Cyberpunk */
@@ -212,6 +254,12 @@
   --chart: 200 50% 5%;
   --grid: 180 100% 12%;
   --success: 120 100% 50%;
+  --button-success: 120 100% 40%;
+  --button-success-hover: 120 100% 35%;
+  --button-destructive: 0 100% 40%;
+  --button-destructive-hover: 0 100% 35%;
+  --button-primary: 300 100% 50%;
+  --button-primary-hover: 300 100% 45%;
 }
 
 /* Efeitos Neon removidos - sem brilhos */

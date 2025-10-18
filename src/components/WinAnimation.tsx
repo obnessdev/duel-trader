@@ -67,7 +67,7 @@ export const WinAnimation = ({ isVisible, amount, onComplete }: WinAnimationProp
           <img
             src={COINS_IMAGE_URL}
             alt="Moedas"
-            className="w-[60rem] h-[60rem] object-contain drop-shadow-2xl"
+            className="w-[60rem] h-[60rem] object-contain"
           />
         </div>
       ))}

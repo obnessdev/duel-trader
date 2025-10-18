@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { useMockPrice } from '@/hooks/useMockPrice';
+import { useRealPrice } from '@/hooks/useRealPrice';
 import { useSimulatedTraders } from '@/hooks/useSimulatedTraders';
 import { useTheme } from '@/hooks/useTheme';
 import { useSound } from '@/hooks/useSound';
@@ -13,6 +13,11 @@ import { WinAnimation } from '@/components/WinAnimation';
 import { LossAnimation } from '@/components/LossAnimation';
 import { ThemeSelector } from '@/components/ThemeSelector';
 import { LiquidityScanner } from '@/components/LiquidityScanner';
+import { OrderBook } from '@/components/OrderBook';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { ArrowUp, ArrowDown, Plus, Minus, Smile, MessageCircle } from 'lucide-react';
 import { Asset, Direction, Trade, ChatMessage } from '@/types/trading';
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
 
@@ -36,6 +41,9 @@ const Index = () => {
   const [showWinAnimation, setShowWinAnimation] = useState(false);
   const [showLossAnimation, setShowLossAnimation] = useState(false);
   const [animationAmount, setAnimationAmount] = useState(0);
+  const [amount, setAmount] = useState<string>('10');
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [showMessagePicker, setShowMessagePicker] = useState(false);
 
   // Chart states
   const [chartType, setChartType] = useState<'candlestick' | 'line' | 'area'>('candlestick');
@@ -49,8 +57,8 @@ const Index = () => {
     volume: true
   });
 
-  // Liquidity Equalizer states
-  const [roundBets, setRoundBets] = useState<Array<{
+  // New betting system states
+  const [currentRoundBets, setCurrentRoundBets] = useState<Array<{
     id: string;
     username: string;
     amount: number;
@@ -58,12 +66,15 @@ const Index = () => {
     timestamp: number;
     status: 'pending' | 'accepted' | 'rejected';
   }>>([]);
-  const [countdown, setCountdown] = useState<number>(0);
+  const [roundStartPrice, setRoundStartPrice] = useState<number | null>(null);
+  const [isRoundActive, setIsRoundActive] = useState(false);
   const [isEqualizerActive, setIsEqualizerActive] = useState(false);
-  const [availableLiquidity] = useState(10000); // $10k liquidez disponível
-  const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const [availableLiquidity] = useState(10000);
+  const [isHistoryExpanded, setIsHistoryExpanded] = useState(false);
 
-  const { priceData, isConnected } = useMockPrice(selectedAsset);
+  const { price: realPrice, isLoading } = useRealPrice('BTCUSDT');
+  const priceData = realPrice ? { price: realPrice } : null;
+  const isConnected = !isLoading;
   const { theme, setTheme } = useTheme();
   const { playVictorySound } = useSound();
 
@@ -82,7 +93,7 @@ const Index = () => {
       return;
     }
 
-    // Criar nova aposta para a fila de liquidez
+    // Criar nova aposta
     const newBet = {
       id: crypto.randomUUID(),
       username: 'Você',
@@ -92,37 +103,13 @@ const Index = () => {
       status: 'pending' as const
     };
 
-    // Adicionar à fila de apostas
-    setRoundBets(prev => [...prev, newBet]);
+    // Adicionar à rodada atual
+    setCurrentRoundBets(prev => [...prev, newBet]);
 
-    // Se é a primeira aposta da rodada, iniciar countdown
-    if (roundBets.length === 0) {
-      setCountdown(60); // 60 segundos
-
-      // Limpar interval anterior se existir
-      if (countdownIntervalRef.current) {
-        clearInterval(countdownIntervalRef.current);
-      }
-
-      // Countdown timer
-      countdownIntervalRef.current = setInterval(() => {
-        setCountdown(prev => {
-          if (prev <= 5) { // Últimos 5 segundos (5, 4, 3, 2, 1)
-            if (prev === 5) {
-              setIsEqualizerActive(true);
-            }
-          }
-
-          if (prev <= 0) {
-            if (countdownIntervalRef.current) {
-              clearInterval(countdownIntervalRef.current);
-              countdownIntervalRef.current = null;
-            }
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
+    // Se não há rodada ativa, iniciar nova rodada
+    if (!isRoundActive) {
+      setIsRoundActive(true);
+      setRoundStartPrice(priceData.price);
     }
 
     // Adiciona mensagem ao chat
@@ -154,9 +141,108 @@ const Index = () => {
     });
   };
 
+  // Processo de finalização da rodada quando timer chega a zero
+  const processRoundResults = useCallback(() => {
+    if (!priceData || !roundStartPrice || currentRoundBets.length === 0) {
+      return;
+    }
+
+    const endPrice = priceData.price;
+    const priceChange = endPrice - roundStartPrice;
+    const priceDirection = priceChange > 0 ? 'CALL' : 'PUT';
+
+    // Processar cada aposta
+    currentRoundBets.forEach(bet => {
+      if (bet.username === 'Você') {
+        const isWin = bet.direction === priceDirection;
+        const profit = isWin ? bet.amount : -bet.amount;
+
+        // Atualizar saldo
+        setBalance(prev => prev + profit);
+
+        // Criar trade history
+        const completedTrade: Trade = {
+          id: bet.id,
+          asset: 'BTC/USDT',
+          direction: bet.direction,
+          amount: bet.amount,
+          entryPrice: roundStartPrice,
+          exitPrice: endPrice,
+          startTime: bet.timestamp,
+          endTime: Date.now(),
+          duration: 60,
+          status: 'completed',
+          result: isWin ? 'win' : 'loss',
+          profit
+        };
+
+        const updatedHistory = [...tradeHistory, completedTrade];
+        setTradeHistory(updatedHistory);
+        localStorage.setItem('tradeHistory', JSON.stringify(updatedHistory));
+
+        // Simular se o equalizer devolveu dinheiro (30% chance)
+        const equalizerRefund = Math.random() < 0.3;
+        const refundAmount = equalizerRefund ? bet.amount * 0.5 : 0; // 50% de reembolso
+
+        if (equalizerRefund && !isWin) {
+          // Se perdeu mas teve reembolso
+          setBalance(prev => prev + refundAmount);
+          addChatMessage({
+            type: 'result',
+            username: 'Você',
+            content: '',
+            data: {
+              result: 'refund',
+              profit: refundAmount,
+              originalLoss: profit,
+              asset: 'BTC/USDT',
+            }
+          });
+        } else {
+          // Resultado normal (ganhou ou perdeu sem reembolso)
+          addChatMessage({
+            type: 'result',
+            username: 'Você',
+            content: '',
+            data: {
+              result: isWin ? 'win' : 'loss',
+              profit,
+              asset: 'BTC/USDT',
+            }
+          });
+        }
+
+        // Animação apenas para vitória
+        if (isWin) {
+          setAnimationAmount(Math.abs(profit));
+          setShowWinAnimation(true);
+          playVictorySound();
+        }
+      }
+    });
+
+    // Reset para próxima rodada
+    setCurrentRoundBets([]);
+    setRoundStartPrice(null);
+    setIsRoundActive(false);
+    setIsEqualizerActive(false);
+  }, [priceData, roundStartPrice, currentRoundBets, tradeHistory, playVictorySound]);
+
   // Handler para eventos de traders simulados
   const handleSimulatedTraderEvent = useCallback((event: any) => {
     if (event.type === 'bet') {
+      // Adicionar apostas simuladas à rodada atual
+      const simulatedBet = {
+        id: crypto.randomUUID(),
+        username: event.username,
+        amount: event.amount,
+        direction: event.direction,
+        timestamp: Date.now(),
+        status: 'pending' as const
+      };
+
+      setCurrentRoundBets(prev => [...prev, simulatedBet]);
+
       addChatMessage({
         type: 'bet',
         username: event.username,
@@ -174,79 +260,22 @@ const Index = () => {
         content: event.emoji,
       });
     }
-  }, [selectedAsset]);
+  }, []);
 
   // Ativa traders simulados
   useSimulatedTraders(selectedAsset, handleSimulatedTraderEvent, true);
 
-  const completeDuel = (trade: Trade) => {
-    if (!priceData) return;
+  // Adiciona AI Equalizer nos últimos 5 segundos
+  const activateEqualizerIfNeeded = useCallback(() => {
+    if (isRoundActive && currentRoundBets.length > 0) {
+      setIsEqualizerActive(true);
 
-    // Dar 60% de chance de vitória para melhor experiência do usuário
-    const winChance = Math.random();
-    let isWin = winChance < 0.6; // 60% chance de vitória
-
-    // Simular variação de preço baseada no resultado desejado
-    let priceVariation;
-    if (isWin) {
-      // Se vai ganhar, criar variação favorável
-      priceVariation = trade.direction === 'CALL'
-        ? Math.random() * (trade.entryPrice * 0.005) + 0.01 // Variação positiva
-        : -(Math.random() * (trade.entryPrice * 0.005) + 0.01); // Variação negativa
-    } else {
-      // Se vai perder, criar variação desfavorável
-      priceVariation = trade.direction === 'CALL'
-        ? -(Math.random() * (trade.entryPrice * 0.005) + 0.01) // Variação negativa
-        : Math.random() * (trade.entryPrice * 0.005) + 0.01; // Variação positiva
+      // Desativar equalizer após 5 segundos
+      setTimeout(() => {
+        setIsEqualizerActive(false);
+      }, 5000);
     }
-
-    const exitPrice = trade.entryPrice + priceVariation;
-    const priceChange = exitPrice - trade.entryPrice;
-
-    // Reconfirmar vitória baseada na variação real
-    isWin = (trade.direction === 'CALL' && priceChange > 0) ||
-            (trade.direction === 'PUT' && priceChange < 0);
-
-    const completedTrade: Trade = {
-      ...trade,
-      exitPrice,
-      endTime: Date.now(),
-      status: 'completed',
-      result: isWin ? 'win' : 'loss',
-      profit: isWin ? trade.amount : -trade.amount
-    };
-
-    const updatedHistory = [...tradeHistory, completedTrade];
-    setTradeHistory(updatedHistory);
-    localStorage.setItem('tradeHistory', JSON.stringify(updatedHistory));
-    setActiveTrade(null);
-
-    // Atualizar saldo baseado no resultado
-    setBalance(prev => prev + (completedTrade.profit || 0));
-
-    // Adiciona mensagem de resultado ao chat
-    addChatMessage({
-      type: 'result',
-      username: 'Você',
-      content: '',
-      data: {
-        result: isWin ? 'win' : 'loss',
-        profit: completedTrade.profit,
-        asset: trade.asset,
-      }
-    });
-
-    // Mostra animação de vitória ou derrota
-    setAnimationAmount(Math.abs(completedTrade.profit || 0));
-    if (isWin) {
-      setShowWinAnimation(true);
-      playVictorySound(); // Toca som de vitória
-    } else {
-      setShowLossAnimation(true);
-    }
-
-    // Toast removido - resultado já vai para o chat
-  };
+  }, [isRoundActive, currentRoundBets]);
 
   // Chart control functions
   const handleToggleIndicator = (indicator: string) => {
@@ -269,187 +298,127 @@ const Index = () => {
     // Aqui você pode implementar a lógica de salvar o alerta
   };
 
-  // Reset do sistema quando scan termina
-  useEffect(() => {
-    if (isEqualizerActive) {
-      const scanTimeout = setTimeout(() => {
-        setIsEqualizerActive(false);
-
-        // Processar resultados para cada aposta
-        roundBets.forEach(bet => {
-          if (bet.username === 'Você') {
-            // Gerar resultado para o usuário (50% chance de vitória)
-            const isWin = Math.random() < 0.5;
-            const profit = isWin ? bet.amount : -bet.amount;
-
-            // Atualizar saldo
-            setBalance(prev => prev + profit);
-
-            // Adicionar mensagem de resultado ao chat
-            addChatMessage({
-              type: 'result',
-              username: 'Você',
-              content: '',
-              data: {
-                result: isWin ? 'win' : 'loss',
-                profit,
-                asset: 'BTC/USDT',
-              }
-            });
-
-            // Mostrar animação apenas para vitória
-            if (isWin) {
-              setAnimationAmount(Math.abs(profit));
-              setShowWinAnimation(true);
-              playVictorySound();
-            }
-          }
-        });
-
-        // Resetar o sistema após processar resultados
-        setCountdown(0);
-        setRoundBets([]);
-      }, 5000); // Scan dura 5 segundos
-
-      return () => clearTimeout(scanTimeout);
-    }
-  }, [isEqualizerActive, roundBets, playVictorySound]);
-
-  // Limpar interval quando componente desmonta
-  useEffect(() => {
-    return () => {
-      if (countdownIntervalRef.current) {
-        clearInterval(countdownIntervalRef.current);
-      }
-    };
-  }, []);
-
-  // Adicionar apostas simuladas para demonstração
-  const addSimulatedBets = () => {
-    const simulatedBets = [
-      { username: 'Trader_Alpha', amount: 150, direction: 'CALL' as Direction },
-      { username: 'CryptoKing', amount: 300, direction: 'PUT' as Direction },
-      { username: 'BullMarket', amount: 75, direction: 'CALL' as Direction },
-      { username: 'BearHunter', amount: 225, direction: 'PUT' as Direction },
-    ];
-
-    simulatedBets.forEach((bet, index) => {
-      setTimeout(() => {
-        const newBet = {
-          id: crypto.randomUUID(),
-          username: bet.username,
-          amount: bet.amount,
-          direction: bet.direction,
-          timestamp: Date.now(),
-          status: 'pending' as const
-        };
-
-        setRoundBets(prev => [...prev, newBet]);
-
-        addChatMessage({
-          type: 'bet',
-          username: bet.username,
-          content: '',
-          data: {
-            direction: bet.direction,
-            amount: bet.amount,
-            asset: "BTC/USDT",
-          }
-        });
-      }, index * 2000); // 2 segundos entre cada aposta
-    });
-  };
-
-  // Auto-adicionar apostas simuladas quando countdown < 20
-  useEffect(() => {
-    if (countdown === 30 && roundBets.length === 1) {
-      addSimulatedBets();
-    }
-  }, [countdown, roundBets.length]);
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="h-screen w-screen bg-background flex flex-col overflow-hidden">
       <Header
         currentTheme={theme}
         onThemeChange={setTheme}
       />
 
-      <div className="flex flex-1">
-        <ChartSidebar
-          selectedTimeframe={timeframe}
-          onTimeframeChange={() => {}} // Função vazia já que timeframe é fixo
-          selectedTool={selectedTool}
-          onToolChange={setSelectedTool}
-          chartType={chartType}
-          onChartTypeChange={setChartType}
-          showIndicators={showIndicators}
-          onToggleIndicator={handleToggleIndicator}
-          onAddAlert={handleAddAlert}
-        />
+      <div className="flex flex-1 min-h-0">
+        {/* Sidebar - Esconde em mobile */}
+        <div className="hidden lg:block">
+          <ChartSidebar
+            selectedTimeframe={timeframe}
+            onTimeframeChange={() => {}}
+            selectedTool={selectedTool}
+            onToolChange={setSelectedTool}
+            chartType={chartType}
+            onChartTypeChange={setChartType}
+            showIndicators={showIndicators}
+            onToggleIndicator={handleToggleIndicator}
+            onAddAlert={handleAddAlert}
+          />
+        </div>
 
-        <div className="flex-1 flex flex-col">
-          <div className="flex-1 grid grid-cols-[1fr,360px] min-h-0">
-            <div className="p-4 flex flex-col min-h-0">
-              <div className="flex-1 min-h-0">
-                <AdvancedTradingChart
-                  priceData={priceData}
-                  isConnected={isConnected}
-                  asset={selectedAsset.toUpperCase()}
-                  timeframe={timeframe}
-                  chartType={chartType}
-                  showIndicators={showIndicators}
-                  onToggleIndicator={handleToggleIndicator}
-                  onAddAlert={handleAddAlert}
-                />
-              </div>
-            </div>
-
-            <div className="border-l border-border/50 p-4 bg-muted/20">
-              {/* Countdown Display */}
-              {countdown > 0 && (
-                <div className="mb-4 p-4 bg-muted border border-border rounded-lg text-center">
-                  <div className="text-lg font-bold text-foreground">RODADA ATIVA</div>
-                  <div className="text-3xl font-mono text-foreground">{countdown}s</div>
-                  <div className="text-sm text-muted-foreground">
-                    {countdown <= 5 ? '🔍 Equalizador ativo!' : 'Apostas abertas'}
+        <div className="flex-1 flex min-h-0 overflow-hidden">
+          {/* Desktop Layout */}
+          <div className="hidden md:block w-full">
+            <ResizablePanelGroup direction="horizontal" className="w-full">
+              <ResizablePanel defaultSize={70} minSize={50}>
+                <div className="flex flex-col h-full w-full overflow-hidden">
+                  <div className={`overflow-hidden w-full transition-all duration-300 ${isHistoryExpanded ? 'flex-1' : 'flex-[2]'}`}>
+                    <AdvancedTradingChart
+                      priceData={priceData}
+                      isConnected={isConnected}
+                      asset={selectedAsset.toUpperCase()}
+                      timeframe={timeframe}
+                      chartType={chartType}
+                      showIndicators={showIndicators}
+                      onToggleIndicator={handleToggleIndicator}
+                      onAddAlert={handleAddAlert}
+                    />
                   </div>
-                  <div className="text-xs mt-2 text-muted-foreground">
-                    Apostas na fila: {roundBets.length} | Liquidez: ${availableLiquidity.toLocaleString()}
+                  <div className={`border-t border-border/50 w-full overflow-hidden transition-all duration-300 ${isHistoryExpanded ? 'flex-1' : 'h-48'}`}>
+                    <HistoryTabs
+                      trades={tradeHistory}
+                      isExpanded={isHistoryExpanded}
+                      onToggleExpand={() => setIsHistoryExpanded(!isHistoryExpanded)}
+                    />
                   </div>
                 </div>
-              )}
-
-              <DuelPanel
-                asset="BTC/USDT"
-                currentPrice={priceData?.price || 0}
-                onStartDuel={handleStartDuel}
-                isActive={activeTrade !== null || countdown > 0}
-                isEqualizerActive={isEqualizerActive}
-                bets={roundBets}
-                availableLiquidity={availableLiquidity}
-              />
-            </div>
-          </div>
-
-          <div className="border-t border-border/50 h-80">
-            <ResizablePanelGroup direction="horizontal">
-              <ResizablePanel defaultSize={50} minSize={30}>
-                <HistoryTabs trades={tradeHistory} />
               </ResizablePanel>
 
               <ResizableHandle withHandle className="w-2 bg-border/50 hover:bg-border" />
 
-              <ResizablePanel defaultSize={50} minSize={30}>
-                <div className="h-full bg-background">
-                  <LiveChat
-                    messages={chatMessages}
-                    onSendEmoji={handleSendEmoji}
-                    onSendMessage={handleSendMessage}
-                    isEmbedded={true}
-                  />
+              <ResizablePanel defaultSize={30} minSize={25}>
+                <div className="flex flex-col h-full w-full overflow-hidden">
+                  <div className="flex flex-1 border-b border-border/50 min-h-0 overflow-hidden w-full">
+                    <div className="w-1/2 border-r border-border/50 p-2 lg:p-3 overflow-hidden h-full">
+                      <OrderBook
+                        isScanActive={isEqualizerActive}
+                        userBetAmount={currentRoundBets.find(bet => bet.username === 'Você')?.amount || 0}
+                        wasUserBetAccepted={currentRoundBets.some(bet => bet.username === 'Você')}
+                      />
+                    </div>
+                    <div className="w-1/2 p-2 lg:p-3 overflow-hidden h-full">
+                      <DuelPanel
+                        asset="BTC/USDT"
+                        currentPrice={priceData?.price || 0}
+                        onStartDuel={handleStartDuel}
+                        isActive={isRoundActive}
+                        isEqualizerActive={isEqualizerActive}
+                        bets={currentRoundBets}
+                        availableLiquidity={availableLiquidity}
+                        onRoundComplete={processRoundResults}
+                        onEqualizerActivate={activateEqualizerIfNeeded}
+                      />
+                    </div>
+                  </div>
+                  <div className="h-60 lg:h-72 border-t border-border/50 flex-shrink-0 w-full overflow-hidden">
+                    <LiveChat
+                      messages={chatMessages}
+                      onSendEmoji={handleSendEmoji}
+                      onSendMessage={handleSendMessage}
+                      isEmbedded={true}
+                    />
+                  </div>
                 </div>
               </ResizablePanel>
             </ResizablePanelGroup>
+          </div>
+
+          {/* Mobile Layout */}
+          <div className="md:hidden w-full flex flex-col">
+            {/* Gráfico em mobile */}
+            <div className="h-1/2 border-b border-border/50">
+              <AdvancedTradingChart
+                priceData={priceData}
+                isConnected={isConnected}
+                asset={selectedAsset.toUpperCase()}
+                timeframe={timeframe}
+                chartType={chartType}
+                showIndicators={showIndicators}
+                onToggleIndicator={handleToggleIndicator}
+                onAddAlert={handleAddAlert}
+              />
+            </div>
+
+            {/* Trading Panel em mobile */}
+            <div className="h-1/2 p-3">
+              <DuelPanel
+                asset="BTC/USDT"
+                currentPrice={priceData?.price || 0}
+                onStartDuel={handleStartDuel}
+                isActive={isRoundActive}
+                isEqualizerActive={isEqualizerActive}
+                bets={currentRoundBets}
+                availableLiquidity={availableLiquidity}
+                onRoundComplete={processRoundResults}
+                onEqualizerActivate={activateEqualizerIfNeeded}
+              />
+            </div>
           </div>
         </div>
       </div>

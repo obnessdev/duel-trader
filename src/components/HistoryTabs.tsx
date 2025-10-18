@@ -1,12 +1,16 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Button } from '@/components/ui/button';
+import { ChevronUp, ChevronDown } from 'lucide-react';
 import { Trade } from '@/types/trading';
 
 interface HistoryTabsProps {
   trades: Trade[];
+  isExpanded?: boolean;
+  onToggleExpand?: () => void;
 }
 
-export const HistoryTabs = ({ trades }: HistoryTabsProps) => {
+export const HistoryTabs = ({ trades, isExpanded = false, onToggleExpand }: HistoryTabsProps) => {
   const completedTrades = trades.filter(t => t.status === 'completed');
 
   const formatTime = (timestamp: number) => {
@@ -21,11 +25,27 @@ export const HistoryTabs = ({ trades }: HistoryTabsProps) => {
   };
 
   return (
-    <Tabs defaultValue="history" className="w-full h-80 flex flex-col">
-      <TabsList className="bg-background border-b border-border/50 rounded-none w-full justify-start h-12">
-        <TabsTrigger value="history" className="text-sm">Histórico</TabsTrigger>
-        <TabsTrigger value="orders" className="text-sm">Ordens</TabsTrigger>
-        <TabsTrigger value="operations" className="text-sm">Operações</TabsTrigger>
+    <Tabs defaultValue="history" className="w-full h-full flex flex-col">
+      <TabsList className="bg-background border-b border-border/50 rounded-none w-full justify-between h-12">
+        <div className="flex">
+          <TabsTrigger value="history" className="text-sm">Histórico</TabsTrigger>
+          <TabsTrigger value="orders" className="text-sm">Ordens</TabsTrigger>
+          <TabsTrigger value="operations" className="text-sm">Operações</TabsTrigger>
+        </div>
+        {onToggleExpand && (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8"
+            onClick={onToggleExpand}
+          >
+            {isExpanded ? (
+              <ChevronDown className="h-4 w-4" />
+            ) : (
+              <ChevronUp className="h-4 w-4" />
+            )}
+          </Button>
+        )}
       </TabsList>
 
       <TabsContent value="history" className="mt-0 bg-background border border-t-0 border-border/50 flex-1 overflow-auto">

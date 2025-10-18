@@ -13,9 +13,29 @@
 @layer base {
   :root {
     --radius: 0.5rem;
-    
+
     /* Animation tokens */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    /* Typography Scale */
+    --font-size-xs: 0.75rem;    /* 12px */
+    --font-size-sm: 0.875rem;   /* 14px */
+    --font-size-base: 1rem;     /* 16px */
+    --font-size-lg: 1.125rem;   /* 18px */
+    --font-size-xl: 1.25rem;    /* 20px */
+    --font-size-2xl: 1.5rem;    /* 24px */
+    --font-size-3xl: 1.875rem;  /* 30px */
+    --font-size-4xl: 2.25rem;   /* 36px */
+
+    /* Line Heights */
+    --line-height-tight: 1.25;
+    --line-height-normal: 1.5;
+    --line-height-relaxed: 1.75;
+
+    /* Letter Spacing */
+    --letter-spacing-tight: -0.025em;
+    --letter-spacing-normal: 0em;
+    --letter-spacing-wide: 0.025em;
   }
 }
 
@@ -39,35 +59,108 @@
   .glass-card {
     @apply backdrop-blur-xl bg-card/50 border border-border/50;
   }
-  
+
   .gradient-success {
     background: var(--gradient-primary);
   }
-  
+
   .gradient-destructive {
     background: var(--gradient-destructive);
   }
-  
-  .glow-success {
-    box-shadow: var(--shadow-glow-success);
-  }
-  
-  .glow-destructive {
-    box-shadow: var(--shadow-glow-destructive);
-  }
-  
-  .animate-pulse-glow {
-    animation: pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-  }
-}
 
-@keyframes pulse-glow {
-  0%, 100% {
-    opacity: 1;
+  /* Typography utilities */
+  .text-display-sm {
+    font-size: var(--font-size-2xl);
+    line-height: var(--line-height-tight);
+    letter-spacing: var(--letter-spacing-tight);
+    font-weight: 600;
   }
-  50% {
-    opacity: 0.7;
+
+  .text-display-base {
+    font-size: var(--font-size-3xl);
+    line-height: var(--line-height-tight);
+    letter-spacing: var(--letter-spacing-tight);
+    font-weight: 600;
   }
+
+  .text-display-lg {
+    font-size: var(--font-size-4xl);
+    line-height: var(--line-height-tight);
+    letter-spacing: var(--letter-spacing-tight);
+    font-weight: 700;
+  }
+
+  .text-body-xs {
+    font-size: var(--font-size-xs);
+    line-height: var(--line-height-normal);
+    letter-spacing: var(--letter-spacing-normal);
+  }
+
+  .text-body-sm {
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-normal);
+    letter-spacing: var(--letter-spacing-normal);
+  }
+
+  .text-body-base {
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-normal);
+    letter-spacing: var(--letter-spacing-normal);
+  }
+
+  .text-body-lg {
+    font-size: var(--font-size-lg);
+    line-height: var(--line-height-normal);
+    letter-spacing: var(--letter-spacing-normal);
+  }
+
+  .text-label-xs {
+    font-size: var(--font-size-xs);
+    line-height: var(--line-height-tight);
+    letter-spacing: var(--letter-spacing-wide);
+    font-weight: 500;
+    text-transform: uppercase;
+  }
+
+  .text-label-sm {
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-tight);
+    letter-spacing: var(--letter-spacing-wide);
+    font-weight: 500;
+    text-transform: uppercase;
+  }
+
+  /* Theme-aware button utilities */
+  .btn-success-theme {
+    background-color: hsl(var(--button-success));
+    color: white;
+    transition: background-color 0.2s ease;
+  }
+
+  .btn-success-theme:hover {
+    background-color: hsl(var(--button-success-hover));
+  }
+
+  .btn-destructive-theme {
+    background-color: hsl(var(--button-destructive));
+    color: white;
+    transition: background-color 0.2s ease;
+  }
+
+  .btn-destructive-theme:hover {
+    background-color: hsl(var(--button-destructive-hover));
+  }
+
+  .btn-primary-theme {
+    background-color: hsl(var(--button-primary));
+    color: hsl(var(--primary-foreground));
+    transition: background-color 0.2s ease;
+  }
+
+  .btn-primary-theme:hover {
+    background-color: hsl(var(--button-primary-hover));
+  }
+
 }
 
 @keyframes slide-in-right {

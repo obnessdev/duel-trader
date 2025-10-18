@@ -138,7 +138,7 @@ export const LiquidityScanner = ({
         <div className={`relative bg-gray-900 rounded overflow-hidden flex-shrink-0 ${isEmbedded ? 'mb-2 h-16' : 'mb-6 h-32'}`}>
           {/* Linha de scan */}
           <div
-            className="absolute top-0 w-full h-0.5 bg-blue-400 shadow-lg transition-transform duration-100"
+            className="absolute top-0 w-full h-0.5 bg-blue-400 transition-transform duration-100"
             style={{
               transform: `translateY(${(scanProgress / 100) * (isEmbedded ? 64 : 128)}px)`,
               boxShadow: '0 0 10px #60a5fa'
@@ -234,10 +234,10 @@ export const LiquidityScanner = ({
           <div className={`relative bg-gray-900 rounded border overflow-hidden flex-shrink-0 ${isEmbedded ? 'mb-2 h-16' : 'mb-6 h-32'}`}>
             {/* Linha de scan */}
             <div
-              className="absolute top-0 w-full h-0.5 bg-blue-400 shadow-lg transition-transform duration-100"
+              className="absolute top-0 w-full h-0.5 bg-blue-400 transition-transform duration-100"
               style={{
                 transform: `translateY(${(scanProgress / 100) * (isEmbedded ? 64 : 128)}px)`,
-                boxShadow: '0 0 10px #60a5fa'
+                boxShadow: 'none'
               }}
             />
 
