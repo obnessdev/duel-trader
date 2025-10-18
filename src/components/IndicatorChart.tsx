@@ -249,8 +249,8 @@ export const IndicatorChart = ({ candleData, type, height = 150 }: IndicatorChar
   return (
     <Card className={`${cardClass} overflow-hidden flex flex-col p-0`}>
       {/* Header */}
-      <div className={`p-2 border-b ${headerClass} flex-shrink-0`}>
-        <h3 className="text-xs font-semibold text-muted-foreground">{getTitle()}</h3>
+      <div className={`p-1 sm:p-2 border-b ${headerClass} flex-shrink-0`}>
+        <h3 className="text-xs sm:text-sm font-semibold text-muted-foreground">{getTitle()}</h3>
       </div>
 
       {/* Chart */}

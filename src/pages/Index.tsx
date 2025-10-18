@@ -375,8 +375,8 @@ const Index = () => {
         </div>
 
         <div className="flex-1 flex min-h-0 overflow-hidden">
-          {/* Desktop Layout */}
-          <div className="hidden md:block w-full">
+          {/* Desktop Layout (lg and above) */}
+          <div className="hidden lg:block w-full">
             <ResizablePanelGroup direction="horizontal" className="w-full">
               <ResizablePanel defaultSize={70} minSize={50}>
                 <div className="flex flex-col h-full w-full overflow-hidden">
@@ -464,10 +464,10 @@ const Index = () => {
             </ResizablePanelGroup>
           </div>
 
-          {/* Mobile Layout */}
-          <div className="md:hidden w-full flex flex-col">
-            {/* Gráfico em mobile */}
-            <div className="h-1/2 border-b border-border/50">
+          {/* Tablet Layout (md to lg) */}
+          <div className="hidden md:block lg:hidden w-full flex flex-col h-full">
+            {/* Chart area */}
+            <div className="flex-[2] border-b border-border/50 min-h-0">
               <AdvancedTradingChart
                 priceData={priceData}
                 isConnected={isConnected}
@@ -480,8 +480,150 @@ const Index = () => {
               />
             </div>
 
+            {/* Indicator Charts Tablet */}
+            {(showIndicators?.rsi || showIndicators?.macd) && (
+              <div className="h-40 border-b border-border/50 overflow-hidden">
+                <div className="grid grid-cols-2 gap-1 h-full">
+                  {showIndicators?.rsi && (
+                    <IndicatorChart
+                      candleData={candleData}
+                      type="rsi"
+                      height={150}
+                    />
+                  )}
+                  {showIndicators?.macd && (
+                    <IndicatorChart
+                      candleData={candleData}
+                      type="macd"
+                      height={150}
+                    />
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Trading and order book section */}
+            <div className="flex-1 flex border-b border-border/50 min-h-0">
+              <div className="w-1/3 border-r border-border/50 p-2 overflow-hidden">
+                <OrderBook
+                  isScanActive={isEqualizerActive}
+                  userBetAmount={currentRoundBets.find(bet => bet.username === 'Você')?.amount || 0}
+                  wasUserBetAccepted={currentRoundBets.some(bet => bet.username === 'Você')}
+                />
+              </div>
+              <div className="w-1/3 border-r border-border/50 p-2 overflow-hidden">
+                <DuelPanel
+                  asset="BTC/USDT"
+                  currentPrice={priceData?.price || 0}
+                  onStartDuel={handleStartDuel}
+                  isActive={isRoundActive}
+                  isEqualizerActive={isEqualizerActive}
+                  bets={currentRoundBets}
+                  availableLiquidity={availableLiquidity}
+                  onRoundComplete={processRoundResults}
+                  onEqualizerActivate={activateEqualizerIfNeeded}
+                />
+              </div>
+              <div className="w-1/3 p-2 overflow-hidden">
+                <HistoryTabs
+                  trades={tradeHistory}
+                  isExpanded={false}
+                  onToggleExpand={() => {}}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Mobile Layout */}
+          <div className="md:hidden w-full flex flex-col h-full">
+            {/* Mobile controls */}
+            <div className="p-2 border-b border-border/50 bg-background/95 backdrop-blur-sm">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Button
+                    size="sm"
+                    variant={showIndicators?.rsi ? "default" : "outline"}
+                    onClick={() => handleToggleIndicator('rsi')}
+                    className="text-xs px-2 py-1"
+                  >
+                    RSI
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant={showIndicators?.macd ? "default" : "outline"}
+                    onClick={() => handleToggleIndicator('macd')}
+                    className="text-xs px-2 py-1"
+                  >
+                    MACD
+                  </Button>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Button
+                    size="sm"
+                    variant={chartType === 'candlestick' ? "default" : "outline"}
+                    onClick={() => setChartType('candlestick')}
+                    className="text-xs px-2 py-1"
+                  >
+                    📊
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant={chartType === 'line' ? "default" : "outline"}
+                    onClick={() => setChartType('line')}
+                    className="text-xs px-2 py-1"
+                  >
+                    📈
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant={chartType === 'area' ? "default" : "outline"}
+                    onClick={() => setChartType('area')}
+                    className="text-xs px-2 py-1"
+                  >
+                    🌊
+                  </Button>
+                </div>
+              </div>
+            </div>
+
+            {/* Gráfico em mobile */}
+            <div className="flex-1 border-b border-border/50 min-h-0">
+              <AdvancedTradingChart
+                priceData={priceData}
+                isConnected={isConnected}
+                asset={selectedAsset.toUpperCase()}
+                timeframe={timeframe}
+                chartType={chartType}
+                showIndicators={showIndicators}
+                onToggleIndicator={handleToggleIndicator}
+                onAddAlert={handleAddAlert}
+              />
+            </div>
+
+            {/* Indicator Charts Mobile */}
+            {(showIndicators?.rsi || showIndicators?.macd) && (
+              <div className="h-40 sm:h-48 border-b border-border/50 overflow-hidden">
+                <div className={`${showIndicators?.rsi && showIndicators?.macd ? 'grid grid-rows-2' : 'grid grid-rows-1'} gap-1 h-full`}>
+                  {showIndicators?.rsi && (
+                    <IndicatorChart
+                      candleData={candleData}
+                      type="rsi"
+                      height={showIndicators?.macd ? 90 : 180}
+                    />
+                  )}
+                  {showIndicators?.macd && (
+                    <IndicatorChart
+                      candleData={candleData}
+                      type="macd"
+                      height={showIndicators?.rsi ? 90 : 180}
+                    />
+                  )}
+                </div>
+              </div>
+            )}
+
             {/* Trading Panel em mobile */}
-            <div className="h-1/2 p-3">
+            <div className="h-64 sm:h-72 p-3 flex-shrink-0">
               <DuelPanel
                 asset="BTC/USDT"
                 currentPrice={priceData?.price || 0}
