@@ -62,7 +62,8 @@ export const ChartSidebar = ({
     { id: 'ema20', label: 'EMA', name: 'EMA(20)' },
     { id: 'rsi', label: 'RSI', name: 'RSI(14)' },
     { id: 'macd', label: 'MACD', name: 'MACD' },
-    { id: 'volume', label: 'VOL', name: 'Volume' }
+    { id: 'volume', label: 'VOL', name: 'Volume' },
+    { id: 'support', label: 'S/R', name: 'Support/Resistance' }
   ];
 
   const handleToolClick = (toolId: string) => {

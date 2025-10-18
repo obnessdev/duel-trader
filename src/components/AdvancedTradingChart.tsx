@@ -3,6 +3,7 @@ import { createChart, ColorType } from 'lightweight-charts';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { PriceData } from '@/types/trading';
+import { calculateSMA, calculateEMA, calculateRSI, calculateBollingerBands, calculateMACD, calculateVolumeProfile, calculateSupportResistance } from '@/utils/indicators';
 
 interface AdvancedTradingChartProps {
   priceData: PriceData | null;
@@ -81,10 +82,14 @@ export const AdvancedTradingChart = ({
   asset,
   timeframe = 1,
   chartType: propChartType = 'candlestick',
+  showIndicators,
+  onToggleIndicator,
+  onAddAlert,
 }: AdvancedTradingChartProps) => {
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<any>(null);
   const candlestickSeriesRef = useRef<any>(null);
+  const indicatorSeriesRefs = useRef<{[key: string]: any}>({});
 
   const [candleData, setCandleData] = useState<CandleData[]>([]);
   const [chartType, setChartType] = useState<'candlestick' | 'line' | 'area'>(propChartType);
@@ -267,6 +272,136 @@ export const AdvancedTradingChart = ({
 
     mainSeries.setData(chartData);
 
+    // Add indicators if enabled
+    if (showIndicators) {
+      // Clear existing indicator series
+      Object.values(indicatorSeriesRefs.current).forEach(series => {
+        if (series) {
+          if (series.upper) { // Bollinger bands
+            chart.removeSeries(series.upper);
+            chart.removeSeries(series.lower);
+            chart.removeSeries(series.middle);
+          } else if (Array.isArray(series)) { // Support/Resistance lines
+            series.forEach(line => chart.removeSeries(line));
+          } else {
+            chart.removeSeries(series);
+          }
+        }
+      });
+      indicatorSeriesRefs.current = {};
+
+      // SMA 20
+      if (showIndicators.sma20) {
+        const smaData = calculateSMA(candleData, 20);
+        const smaSeries = chart.addLineSeries({
+          color: '#FF6B6B',
+          lineWidth: 2,
+          title: 'SMA(20)'
+        });
+        smaSeries.setData(smaData);
+        indicatorSeriesRefs.current.sma20 = smaSeries;
+      }
+
+      // EMA 20
+      if (showIndicators.ema20) {
+        const emaData = calculateEMA(candleData, 20);
+        const emaSeries = chart.addLineSeries({
+          color: '#4ECDC4',
+          lineWidth: 2,
+          title: 'EMA(20)'
+        });
+        emaSeries.setData(emaData);
+        indicatorSeriesRefs.current.ema20 = emaSeries;
+      }
+
+      // Bollinger Bands
+      if (showIndicators.bollinger) {
+        const bbData = calculateBollingerBands(candleData, 20, 2);
+
+        // Upper band
+        const upperBand = chart.addLineSeries({
+          color: '#9B59B6',
+          lineWidth: 1,
+          lineStyle: 2, // dashed
+          title: 'BB Upper'
+        });
+        upperBand.setData(bbData.map(d => ({ time: d.time, value: d.upper })));
+
+        // Lower band
+        const lowerBand = chart.addLineSeries({
+          color: '#9B59B6',
+          lineWidth: 1,
+          lineStyle: 2, // dashed
+          title: 'BB Lower'
+        });
+        lowerBand.setData(bbData.map(d => ({ time: d.time, value: d.lower })));
+
+        // Middle band (SMA)
+        const middleBand = chart.addLineSeries({
+          color: '#9B59B6',
+          lineWidth: 1,
+          title: 'BB Middle'
+        });
+        middleBand.setData(bbData.map(d => ({ time: d.time, value: d.middle })));
+
+        indicatorSeriesRefs.current.bollinger = { upper: upperBand, lower: lowerBand, middle: middleBand };
+      }
+
+      // Volume Profile (simplified overlay)
+      if (showIndicators.volume) {
+        const volumeData = candleData.map(d => ({
+          time: d.time,
+          value: d.volume,
+          color: d.close >= d.open ? '#4CAF50' : '#F44336'
+        }));
+
+        const volumeSeries = chart.addHistogramSeries({
+          color: '#9E9E9E',
+          priceFormat: {
+            type: 'volume',
+          },
+          priceScaleId: 'volume',
+          title: 'Volume'
+        });
+
+        volumeSeries.setData(volumeData);
+        indicatorSeriesRefs.current.volume = volumeSeries;
+
+        // Configure volume price scale
+        chart.priceScale('volume').applyOptions({
+          scaleMargins: {
+            top: 0.8,
+            bottom: 0,
+          },
+        });
+      }
+
+      // Support/Resistance Lines
+      if (showIndicators.support) {
+        const supportResistanceData = calculateSupportResistance(candleData);
+
+        supportResistanceData.forEach((level, index) => {
+          if (index < 5) { // Show only top 5 levels
+            const lineSeries = chart.addLineSeries({
+              color: level.type === 'support' ? '#4CAF50' : '#F44336',
+              lineWidth: 2,
+              lineStyle: 2, // dashed
+              title: `${level.type.toUpperCase()} ${level.price.toFixed(2)}`
+            });
+
+            // Create horizontal line
+            const lineData = candleData.map(d => ({ time: d.time, value: level.price }));
+            lineSeries.setData(lineData);
+
+            if (!indicatorSeriesRefs.current.support) {
+              indicatorSeriesRefs.current.support = [];
+            }
+            indicatorSeriesRefs.current.support.push(lineSeries);
+          }
+        });
+      }
+    }
+
     // Força o gráfico a usar toda a largura disponível
     chart.timeScale().fitContent();
 
@@ -286,7 +421,7 @@ export const AdvancedTradingChart = ({
       window.removeEventListener('resize', handleResize);
       chart.remove();
     };
-  }, [candleData, chartType, propChartType, themeKey]);
+  }, [candleData, chartType, propChartType, themeKey, showIndicators]);
 
   // Update current price - create new candle every minute with real price
   useEffect(() => {

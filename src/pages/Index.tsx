@@ -4,6 +4,7 @@ import { useSimulatedTraders } from '@/hooks/useSimulatedTraders';
 import { useTheme } from '@/hooks/useTheme';
 import { useSound } from '@/hooks/useSound';
 import { AdvancedTradingChart } from '@/components/AdvancedTradingChart';
+import { IndicatorChart } from '@/components/IndicatorChart';
 import { DuelPanel } from '@/components/DuelPanel';
 import { Header } from '@/components/Header';
 import { ChartSidebar } from '@/components/ChartSidebar';
@@ -48,13 +49,15 @@ const Index = () => {
   // Chart states
   const [chartType, setChartType] = useState<'candlestick' | 'line' | 'area'>('candlestick');
   const [selectedTool, setSelectedTool] = useState('cursor');
+  const [candleData, setCandleData] = useState<any[]>([]);
   const [showIndicators, setShowIndicators] = useState({
-    bollinger: true,
+    bollinger: false,
     sma20: true,
     ema20: false,
     rsi: true,
     macd: true,
-    volume: true
+    volume: false,
+    support: false
   });
 
   // New betting system states
@@ -75,6 +78,55 @@ const Index = () => {
   const { price: realPrice, isLoading } = useRealPrice('BTCUSDT');
   const priceData = realPrice ? { price: realPrice } : null;
   const isConnected = !isLoading;
+
+  // Generate historical candle data for indicators
+  useEffect(() => {
+    if (!priceData) return;
+
+    // Generate simple historical data if we don't have any
+    if (candleData.length === 0) {
+      const now = Date.now();
+      const count = 100;
+      let price = priceData.price * 0.995;
+      const targetPrice = priceData.price;
+      const priceStep = (targetPrice - price) / count;
+
+      const historicalData = [];
+      for (let i = count; i > 0; i--) {
+        const time = Math.floor((now - i * 60 * 1000) / 1000);
+        const open = price;
+        const volatility = priceData.price * 0.0005;
+        const change = (Math.random() - 0.5) * volatility;
+        let close = open + change + priceStep;
+
+        if (i <= 3) {
+          close = targetPrice + (Math.random() - 0.5) * volatility * 0.5;
+        }
+
+        close = Math.max(open * 0.999, Math.min(open * 1.001, close));
+
+        const highVariation = Math.random() * volatility * 0.2;
+        const lowVariation = Math.random() * volatility * 0.2;
+
+        const high = Math.max(open, close) + highVariation;
+        const low = Math.min(open, close) - lowVariation;
+        const volume = 1000 + Math.random() * 2000;
+
+        historicalData.push({
+          time,
+          open,
+          high,
+          low,
+          close,
+          volume
+        });
+
+        price = close;
+      }
+
+      setCandleData(historicalData);
+    }
+  }, [priceData, candleData.length]);
   const { theme, setTheme } = useTheme();
   const { playVictorySound } = useSound();
 
@@ -328,7 +380,7 @@ const Index = () => {
             <ResizablePanelGroup direction="horizontal" className="w-full">
               <ResizablePanel defaultSize={70} minSize={50}>
                 <div className="flex flex-col h-full w-full overflow-hidden">
-                  <div className={`overflow-hidden w-full transition-all duration-300 ${isHistoryExpanded ? 'flex-1' : 'flex-[2]'}`}>
+                  <div className={`overflow-hidden w-full transition-all duration-300 ${isHistoryExpanded ? 'flex-1' : 'flex-[3]'}`}>
                     <AdvancedTradingChart
                       priceData={priceData}
                       isConnected={isConnected}
@@ -340,6 +392,29 @@ const Index = () => {
                       onAddAlert={handleAddAlert}
                     />
                   </div>
+
+                  {/* Indicator Charts */}
+                  {(showIndicators?.rsi || showIndicators?.macd) && (
+                    <div className={`border-t border-border/50 w-full overflow-hidden transition-all duration-300 ${isHistoryExpanded ? 'h-32' : 'h-48'}`}>
+                      <div className="grid grid-rows-2 gap-1 h-full">
+                        {showIndicators?.rsi && (
+                          <IndicatorChart
+                            candleData={candleData}
+                            type="rsi"
+                            height={showIndicators?.macd ? 120 : 190}
+                          />
+                        )}
+                        {showIndicators?.macd && (
+                          <IndicatorChart
+                            candleData={candleData}
+                            type="macd"
+                            height={showIndicators?.rsi ? 120 : 190}
+                          />
+                        )}
+                      </div>
+                    </div>
+                  )}
+
                   <div className={`border-t border-border/50 w-full overflow-hidden transition-all duration-300 ${isHistoryExpanded ? 'flex-1' : 'h-48'}`}>
                     <HistoryTabs
                       trades={tradeHistory}
