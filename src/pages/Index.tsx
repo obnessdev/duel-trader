@@ -18,7 +18,8 @@ import { OrderBook } from '@/components/OrderBook';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { ArrowUp, ArrowDown, Plus, Minus, Smile, MessageCircle } from 'lucide-react';
+import { OnboardingTour } from '@/components/OnboardingTour';
+import { ArrowUp, ArrowDown, Plus, Minus, Smile, MessageCircle, HelpCircle } from 'lucide-react';
 import { Asset, Direction, Trade, ChatMessage } from '@/types/trading';
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
 
@@ -45,6 +46,7 @@ const Index = () => {
   const [amount, setAmount] = useState<string>('10');
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [showMessagePicker, setShowMessagePicker] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
 
   // Chart states
   const [chartType, setChartType] = useState<'candlestick' | 'line' | 'area'>('candlestick');
@@ -356,6 +358,7 @@ const Index = () => {
       <Header
         currentTheme={theme}
         onThemeChange={setTheme}
+        onToggleComments={() => {}}
       />
 
       <div className="flex flex-1 min-h-0">
@@ -380,7 +383,7 @@ const Index = () => {
             <ResizablePanelGroup direction="horizontal" className="w-full">
               <ResizablePanel defaultSize={70} minSize={50}>
                 <div className="flex flex-col h-full w-full overflow-hidden">
-                  <div className={`overflow-hidden w-full transition-all duration-300 ${isHistoryExpanded ? 'flex-1' : 'flex-[3]'}`}>
+                  <div className={`overflow-hidden w-full transition-all duration-300 ${isHistoryExpanded ? 'flex-1' : 'flex-[3]'}`} data-onboarding="chart">
                     <AdvancedTradingChart
                       priceData={priceData}
                       isConnected={isConnected}
@@ -415,7 +418,7 @@ const Index = () => {
                     </div>
                   )}
 
-                  <div className={`border-t border-border/50 w-full overflow-hidden transition-all duration-300 ${isHistoryExpanded ? 'flex-1' : 'h-48'}`}>
+                  <div className={`border-t border-border/50 w-full overflow-hidden transition-all duration-300 ${isHistoryExpanded ? 'flex-1' : 'h-48'}`} data-onboarding="history">
                     <HistoryTabs
                       trades={tradeHistory}
                       isExpanded={isHistoryExpanded}
@@ -653,6 +656,23 @@ const Index = () => {
         amount={animationAmount}
         onComplete={() => setShowLossAnimation(false)}
       />
+
+      {/* Onboarding Tour */}
+      <OnboardingTour
+        isOpen={showOnboarding}
+        onClose={() => setShowOnboarding(false)}
+      />
+
+      {/* Onboarding Button */}
+      <Button
+        onClick={() => setShowOnboarding(true)}
+        className="fixed bottom-4 left-4 z-50 bg-blue-500 hover:bg-blue-600 text-white shadow-lg"
+        size="sm"
+      >
+        <HelpCircle className="w-4 h-4 mr-2" />
+        Tutorial
+      </Button>
+
     </div>
   );
 };

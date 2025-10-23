@@ -101,7 +101,7 @@ export const OrderBook = ({
         </div>
       )}
 
-      <Card className="bg-background border-border/50 p-3 h-full flex flex-col">
+      <Card className="bg-background border-border/50 p-3 h-full flex flex-col" data-onboarding="orderbook">
         {/* Header */}
         <div className="text-center mb-3">
           <h3 className="text-sm font-semibold text-muted-foreground">Order Book</h3>

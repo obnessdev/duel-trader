@@ -1,3 +1,7 @@
+// @flowcode: ÁREA DE APOSTAS - CORE DA PLATAFORMA OBNESS
+// Componente responsável pelo sistema de apostas de 1 minuto
+// Implementa as regras de negócio principais da Obness
+
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -38,32 +42,40 @@ export const DuelPanel = ({
   onRoundComplete,
   onEqualizerActivate
 }: DuelPanelProps) => {
+  // @flowcode: REGRAS DE NEGÓCIO - SISTEMA DE APOSTAS
+  // Amount: Valor da aposta (min/max a definir conforme liquidez)
+  // TimeLeft: Timer de 1 minuto - cada ciclo é uma "vela"
   const [amount, setAmount] = useState<string>('10');
-  const [timeLeft, setTimeLeft] = useState(60); // Timer de 1 minuto
+  const [timeLeft, setTimeLeft] = useState(60); // Timer de 1 minuto por vela
   const { toast } = useToast();
   const { language } = useLanguage();
   const t = useTranslation(language);
 
-  // Timer de 1 minuto rodando automaticamente
+  // @flowcode: TIMER DA VELA - REGRA FUNDAMENTAL
+  // Cada vela dura exatamente 1 minuto (60 segundos)
+  // ÚLTIMOS 5 SEGUNDOS: Equalizador de Liquidez + Scanner
+  // Cor normal: 0-55s (apostas liberadas)
+  // Cor vermelha: últimos 5s (bloqueio + equalizador)
   useEffect(() => {
     const timer = setInterval(() => {
       setTimeLeft(prev => {
         if (prev === 5 && isActive) {
-          // Ativar AI Equalizer nos últimos 5 segundos usando setTimeout para evitar setState durante render
+          // @flowcode: EQUALIZADOR DE LIQUIDEZ (REGRA CRÍTICA)
+          // Nos últimos 5s: avalia liquidez, ordem de chegada, devolve se necessário
           setTimeout(() => {
             onEqualizerActivate?.();
           }, 0);
         }
 
         if (prev <= 1) {
-          // Timer chegou a zero
+          // @flowcode: FIM DA VELA - PROCESSA RESULTADOS
+          // Determina vencedores baseado no preço final vs inicial
           if (isActive) {
-            // Se há apostas ativas, processar resultados usando setTimeout
             setTimeout(() => {
               onRoundComplete?.();
             }, 0);
           }
-          return 60; // Reset para próxima rodada
+          return 60; // Reset automático para próxima vela
         }
         return prev - 1;
       });
@@ -72,9 +84,14 @@ export const DuelPanel = ({
     return () => clearInterval(timer);
   }, [isActive, onRoundComplete, onEqualizerActivate]);
 
+  // @flowcode: FUNÇÃO DE APOSTAS - VALIDAÇÕES E REGRAS
+  // Aplica validações antes de aceitar a aposta
+  // TODO: Implementar limite máximo baseado em liquidez disponível
   const handleStartDuel = (direction: Direction) => {
     const numAmount = parseFloat(amount);
-    
+
+    // @flowcode: VALIDAÇÃO DE VALOR MÍNIMO
+    // TODO: Definir valor mínimo/máximo dinâmico conforme regras de negócio
     if (isNaN(numAmount) || numAmount < 1) {
       toast({
         title: "Invalid amount",
@@ -131,14 +148,14 @@ export const DuelPanel = ({
       </div>
 
       {/* Timer */}
-      <div className="flex items-center justify-center gap-1 mb-4">
+      <div className="flex items-center justify-center gap-1 mb-4" data-onboarding="timer">
         <span className="text-2xl font-bold text-foreground">
           {mins}:{secs}
         </span>
       </div>
 
       {/* Amount Section */}
-      <div className="mb-4">
+      <div className="mb-4" data-onboarding="amount">
         <label className="text-xs text-muted-foreground mb-2 block">{t('amount')}</label>
         <div className="relative">
           <Button
@@ -175,7 +192,7 @@ export const DuelPanel = ({
           {t('rate')}: ${fee.toFixed(2)}
         </div>
 
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-2 gap-2" data-onboarding="payout">
           <div className="border border-border/50 rounded p-2 text-center">
             <div className="text-lg font-bold">${payout.toFixed(2)}</div>
             <div className="text-[10px] text-muted-foreground">{t('payout')}</div>
@@ -188,7 +205,7 @@ export const DuelPanel = ({
       </div>
 
       {/* Action Buttons */}
-      <div className="grid grid-cols-2 gap-2 flex-1">
+      <div className="grid grid-cols-2 gap-2 flex-1" data-onboarding="buttons">
         <Button
           onClick={() => handleStartDuel('CALL')}
           disabled={isActive}
@@ -207,7 +224,7 @@ export const DuelPanel = ({
       </div>
 
       {isEqualizerActive && (
-        <div className="text-center text-xs text-blue-400 animate-pulse mt-2">
+        <div className="text-center text-xs text-blue-400 animate-pulse mt-2" data-onboarding="equalizer">
           {t('equalizerActive')}
         </div>
       )}
