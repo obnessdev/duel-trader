@@ -3,7 +3,7 @@ import { useRealPrice } from '@/hooks/useRealPrice';
 import { useSimulatedTraders } from '@/hooks/useSimulatedTraders';
 import { useTheme } from '@/hooks/useTheme';
 import { useSound } from '@/hooks/useSound';
-import { AdvancedTradingChart } from '@/components/AdvancedTradingChart';
+import { TradingViewWidget } from '@/components/TradingViewWidget';
 import { IndicatorChart } from '@/components/IndicatorChart';
 import { DuelPanel } from '@/components/DuelPanel';
 import { Header } from '@/components/Header';
@@ -19,6 +19,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { OnboardingTour } from '@/components/OnboardingTour';
+import { CommentArea } from '@/components/CommentArea';
 import { ArrowUp, ArrowDown, Plus, Minus, Smile, MessageCircle, HelpCircle } from 'lucide-react';
 import { Asset, Direction, Trade, ChatMessage } from '@/types/trading';
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
@@ -384,16 +385,13 @@ const Index = () => {
               <ResizablePanel defaultSize={70} minSize={50}>
                 <div className="flex flex-col h-full w-full overflow-hidden">
                   <div className={`overflow-hidden w-full transition-all duration-300 ${isHistoryExpanded ? 'flex-1' : 'flex-[3]'}`} data-onboarding="chart">
-                    <AdvancedTradingChart
-                      priceData={priceData}
-                      isConnected={isConnected}
-                      asset={selectedAsset.toUpperCase()}
-                      timeframe={timeframe}
-                      chartType={chartType}
-                      showIndicators={showIndicators}
-                      onToggleIndicator={handleToggleIndicator}
-                      onAddAlert={handleAddAlert}
-                    />
+                    <CommentArea className="w-full h-full">
+                      <TradingViewWidget
+                        symbol="BINANCE:BTCUSDT"
+                        width="100%"
+                        height="100%"
+                      />
+                    </CommentArea>
                   </div>
 
                   {/* Indicator Charts */}
@@ -471,16 +469,13 @@ const Index = () => {
           <div className="hidden md:block lg:hidden w-full flex flex-col h-full">
             {/* Chart area */}
             <div className="flex-[2] border-b border-border/50 min-h-0">
-              <AdvancedTradingChart
-                priceData={priceData}
-                isConnected={isConnected}
-                asset={selectedAsset.toUpperCase()}
-                timeframe={timeframe}
-                chartType={chartType}
-                showIndicators={showIndicators}
-                onToggleIndicator={handleToggleIndicator}
-                onAddAlert={handleAddAlert}
-              />
+              <CommentArea className="w-full h-full">
+                <TradingViewWidget
+                  symbol="BINANCE:BTCUSDT"
+                  width="100%"
+                  height="100%"
+                />
+              </CommentArea>
             </div>
 
             {/* Indicator Charts Tablet */}
@@ -591,16 +586,13 @@ const Index = () => {
 
             {/* Gráfico em mobile */}
             <div className="flex-1 border-b border-border/50 min-h-0">
-              <AdvancedTradingChart
-                priceData={priceData}
-                isConnected={isConnected}
-                asset={selectedAsset.toUpperCase()}
-                timeframe={timeframe}
-                chartType={chartType}
-                showIndicators={showIndicators}
-                onToggleIndicator={handleToggleIndicator}
-                onAddAlert={handleAddAlert}
-              />
+              <CommentArea className="w-full h-full">
+                <TradingViewWidget
+                  symbol="BINANCE:BTCUSDT"
+                  width="100%"
+                  height="100%"
+                />
+              </CommentArea>
             </div>
 
             {/* Indicator Charts Mobile */}

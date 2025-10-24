@@ -33,7 +33,15 @@ export const TradingViewWidget = ({
         "enable_publishing": false,
         "allow_symbol_change": true,
         "calendar": false,
-        "support_host": "https://www.tradingview.com"
+        "support_host": "https://www.tradingview.com",
+        "hide_side_toolbar": true,
+        "hide_top_toolbar": false,
+        "hide_legend": false,
+        "save_image": false,
+        "studies": [],
+        "show_popup_button": false,
+        "popup_width": "1000",
+        "popup_height": "650"
       }`;
 
     // Clear any existing content
