@@ -35,13 +35,24 @@ export const TradingViewWidget = ({
         "calendar": false,
         "support_host": "https://www.tradingview.com",
         "hide_side_toolbar": true,
+        "withdateranges": false,
+        "hide_volume": false,
         "hide_top_toolbar": false,
-        "hide_legend": false,
         "save_image": false,
         "studies": [],
         "show_popup_button": false,
         "popup_width": "1000",
-        "popup_height": "650"
+        "popup_height": "650",
+        "hideideas": true,
+        "overrides": {
+          "paneProperties.background": "#131722",
+          "paneProperties.vertGridProperties.color": "#363c4e",
+          "paneProperties.horzGridProperties.color": "#363c4e",
+          "symbolWatermarkProperties.transparency": 90,
+          "scalesProperties.textColor": "#AAA",
+          "mainSeriesProperties.candleStyle.wickUpColor": "#26a69a",
+          "mainSeriesProperties.candleStyle.wickDownColor": "#ef5350"
+        }
       }`;
 
     // Clear any existing content
@@ -56,13 +67,8 @@ export const TradingViewWidget = ({
   }, [symbol]);
 
   return (
-    <div className="tradingview-widget-container" style={{ height, width }}>
+    <div className="tradingview-widget-container relative" style={{ height, width }}>
       <div ref={container} className="tradingview-widget-container__widget" style={{ height, width }}></div>
-      <div className="tradingview-widget-copyright">
-        <a href="https://br.tradingview.com/" rel="noopener nofollow" target="_blank">
-          <span className="blue-text">Track all markets on TradingView</span>
-        </a>
-      </div>
     </div>
   );
 };

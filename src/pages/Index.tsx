@@ -7,7 +7,6 @@ import { TradingViewWidget } from '@/components/TradingViewWidget';
 import { IndicatorChart } from '@/components/IndicatorChart';
 import { DuelPanel } from '@/components/DuelPanel';
 import { Header } from '@/components/Header';
-import { ChartSidebar } from '@/components/ChartSidebar';
 import { HistoryTabs } from '@/components/HistoryTabs';
 import { LiveChat } from '@/components/LiveChat';
 import { WinAnimation } from '@/components/WinAnimation';
@@ -57,8 +56,8 @@ const Index = () => {
     bollinger: false,
     sma20: true,
     ema20: false,
-    rsi: true,
-    macd: true,
+    rsi: false,
+    macd: false,
     volume: false,
     support: false
   });
@@ -363,20 +362,6 @@ const Index = () => {
       />
 
       <div className="flex flex-1 min-h-0">
-        {/* Sidebar - Esconde em mobile */}
-        <div className="hidden lg:block">
-          <ChartSidebar
-            selectedTimeframe={timeframe}
-            onTimeframeChange={() => {}}
-            selectedTool={selectedTool}
-            onToolChange={setSelectedTool}
-            chartType={chartType}
-            onChartTypeChange={setChartType}
-            showIndicators={showIndicators}
-            onToggleIndicator={handleToggleIndicator}
-            onAddAlert={handleAddAlert}
-          />
-        </div>
 
         <div className="flex-1 flex min-h-0 overflow-hidden">
           {/* Desktop Layout (lg and above) */}
@@ -394,27 +379,6 @@ const Index = () => {
                     </CommentArea>
                   </div>
 
-                  {/* Indicator Charts */}
-                  {(showIndicators?.rsi || showIndicators?.macd) && (
-                    <div className={`border-t border-border/50 w-full overflow-hidden transition-all duration-300 ${isHistoryExpanded ? 'h-32' : 'h-48'}`}>
-                      <div className="grid grid-rows-2 gap-1 h-full">
-                        {showIndicators?.rsi && (
-                          <IndicatorChart
-                            candleData={candleData}
-                            type="rsi"
-                            height={showIndicators?.macd ? 120 : 190}
-                          />
-                        )}
-                        {showIndicators?.macd && (
-                          <IndicatorChart
-                            candleData={candleData}
-                            type="macd"
-                            height={showIndicators?.rsi ? 120 : 190}
-                          />
-                        )}
-                      </div>
-                    </div>
-                  )}
 
                   <div className={`border-t border-border/50 w-full overflow-hidden transition-all duration-300 ${isHistoryExpanded ? 'flex-1' : 'h-48'}`} data-onboarding="history">
                     <HistoryTabs
@@ -478,27 +442,6 @@ const Index = () => {
               </CommentArea>
             </div>
 
-            {/* Indicator Charts Tablet */}
-            {(showIndicators?.rsi || showIndicators?.macd) && (
-              <div className="h-40 border-b border-border/50 overflow-hidden">
-                <div className="grid grid-cols-2 gap-1 h-full">
-                  {showIndicators?.rsi && (
-                    <IndicatorChart
-                      candleData={candleData}
-                      type="rsi"
-                      height={150}
-                    />
-                  )}
-                  {showIndicators?.macd && (
-                    <IndicatorChart
-                      candleData={candleData}
-                      type="macd"
-                      height={150}
-                    />
-                  )}
-                </div>
-              </div>
-            )}
 
             {/* Trading and order book section */}
             <div className="flex-1 flex border-b border-border/50 min-h-0">
@@ -536,25 +479,7 @@ const Index = () => {
           <div className="md:hidden w-full flex flex-col h-full">
             {/* Mobile controls */}
             <div className="p-2 border-b border-border/50 bg-background/95 backdrop-blur-sm">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Button
-                    size="sm"
-                    variant={showIndicators?.rsi ? "default" : "outline"}
-                    onClick={() => handleToggleIndicator('rsi')}
-                    className="text-xs px-2 py-1"
-                  >
-                    RSI
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant={showIndicators?.macd ? "default" : "outline"}
-                    onClick={() => handleToggleIndicator('macd')}
-                    className="text-xs px-2 py-1"
-                  >
-                    MACD
-                  </Button>
-                </div>
+              <div className="flex items-center justify-center">
                 <div className="flex items-center gap-1">
                   <Button
                     size="sm"
@@ -595,27 +520,6 @@ const Index = () => {
               </CommentArea>
             </div>
 
-            {/* Indicator Charts Mobile */}
-            {(showIndicators?.rsi || showIndicators?.macd) && (
-              <div className="h-40 sm:h-48 border-b border-border/50 overflow-hidden">
-                <div className={`${showIndicators?.rsi && showIndicators?.macd ? 'grid grid-rows-2' : 'grid grid-rows-1'} gap-1 h-full`}>
-                  {showIndicators?.rsi && (
-                    <IndicatorChart
-                      candleData={candleData}
-                      type="rsi"
-                      height={showIndicators?.macd ? 90 : 180}
-                    />
-                  )}
-                  {showIndicators?.macd && (
-                    <IndicatorChart
-                      candleData={candleData}
-                      type="macd"
-                      height={showIndicators?.rsi ? 90 : 180}
-                    />
-                  )}
-                </div>
-              </div>
-            )}
 
             {/* Trading Panel em mobile */}
             <div className="h-64 sm:h-72 p-3 flex-shrink-0">
