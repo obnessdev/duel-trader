@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { createChart } from 'lightweight-charts';
+import { createChart, ColorType } from 'lightweight-charts';
 import { Card } from '@/components/ui/card';
 import { PriceData } from '@/types/trading';
 
@@ -21,7 +21,7 @@ export const WorkingChart = ({ priceData, isConnected, asset }: WorkingChartProp
       width: chartContainerRef.current.clientWidth,
       height: 400,
       layout: {
-        backgroundColor: 'transparent',
+        background: { type: ColorType.Solid, color: 'transparent' },
         textColor: '#d1d5db',
       },
       grid: {

@@ -239,7 +239,7 @@ export const translations: Record<Language, Translations> = {
 };
 
 export const useTranslation = (language: Language) => {
-  return (key: keyof Translations) => {
+  return <K extends keyof Translations>(key: K): Translations[K] => {
     return translations[language][key];
   };
 };

@@ -103,7 +103,7 @@ export const SimpleTradingChart = ({ priceData, isConnected, asset }: SimpleTrad
 
     // Set data
     const chartData = candleData.map(d => ({
-      time: d.time,
+      time: d.time as any,
       open: d.open,
       high: d.high,
       low: d.low,

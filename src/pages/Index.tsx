@@ -218,13 +218,14 @@ const Index = () => {
         const completedTrade: Trade = {
           id: bet.id,
           asset: 'BTC/USDT',
+          timeframe: 60,
           direction: bet.direction,
           amount: bet.amount,
+          fee: bet.amount * 0.05,
           entryPrice: roundStartPrice,
           exitPrice: endPrice,
           startTime: bet.timestamp,
           endTime: Date.now(),
-          duration: 60,
           status: 'completed',
           result: isWin ? 'win' : 'loss',
           profit
@@ -358,7 +359,6 @@ const Index = () => {
       <Header
         currentTheme={theme}
         onThemeChange={setTheme}
-        onToggleComments={() => {}}
       />
 
       <div className="flex flex-1 min-h-0">

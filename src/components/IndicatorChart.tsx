@@ -94,7 +94,6 @@ export const IndicatorChart = ({ candleData, type, height = 150 }: IndicatorChar
       rightPriceScale: {
         borderColor: gridLineColor,
         textColor: chartTextColor,
-        width: 50,
         scaleMargins: {
           top: 0.1,
           bottom: 0.1,
@@ -105,7 +104,6 @@ export const IndicatorChart = ({ candleData, type, height = 150 }: IndicatorChar
         timeVisible: false,
         secondsVisible: false,
         rightOffset: 0,
-        leftOffset: 0,
         barSpacing: 8,
         minBarSpacing: 1,
         fixLeftEdge: true,
@@ -127,7 +125,7 @@ export const IndicatorChart = ({ candleData, type, height = 150 }: IndicatorChar
         title: 'RSI(14)'
       });
 
-      rsiSeries.setData(rsiData);
+      rsiSeries.setData(rsiData.map(d => ({ time: d.time as any, value: d.value })));
 
       // Add horizontal lines for overbought/oversold levels
       const overboughtSeries = chart.addLineSeries({
@@ -146,8 +144,8 @@ export const IndicatorChart = ({ candleData, type, height = 150 }: IndicatorChar
 
       // Create constant lines for 70 and 30
       if (rsiData.length > 0) {
-        const overboughtData = rsiData.map(d => ({ time: d.time, value: 70 }));
-        const oversoldData = rsiData.map(d => ({ time: d.time, value: 30 }));
+        const overboughtData = rsiData.map(d => ({ time: d.time as any, value: 70 }));
+        const oversoldData = rsiData.map(d => ({ time: d.time as any, value: 30 }));
 
         overboughtSeries.setData(overboughtData);
         oversoldSeries.setData(oversoldData);
@@ -188,10 +186,10 @@ export const IndicatorChart = ({ candleData, type, height = 150 }: IndicatorChar
         title: 'Histogram'
       });
 
-      macdSeries.setData(macdData.map(d => ({ time: d.time, value: d.macd })));
-      signalSeries.setData(macdData.map(d => ({ time: d.time, value: d.signal })));
+      macdSeries.setData(macdData.map(d => ({ time: d.time as any, value: d.macd })));
+      signalSeries.setData(macdData.map(d => ({ time: d.time as any, value: d.signal })));
       histogramSeries.setData(macdData.map(d => ({
-        time: d.time,
+        time: d.time as any,
         value: d.histogram,
         color: d.histogram >= 0 ? '#4CAF50' : '#F44336'
       })));
@@ -205,7 +203,7 @@ export const IndicatorChart = ({ candleData, type, height = 150 }: IndicatorChar
       });
 
       if (macdData.length > 0) {
-        const zeroData = macdData.map(d => ({ time: d.time, value: 0 }));
+        const zeroData = macdData.map(d => ({ time: d.time as any, value: 0 }));
         zeroSeries.setData(zeroData);
       }
     }

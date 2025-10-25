@@ -201,7 +201,6 @@ export const AdvancedTradingChart = ({
       rightPriceScale: {
         borderColor: gridLineColor,
         textColor: chartTextColor,
-        width: 60,
         scaleMargins: {
           top: 0.005,
           bottom: 0.005,
@@ -212,7 +211,6 @@ export const AdvancedTradingChart = ({
         timeVisible: true,
         secondsVisible: false,
         rightOffset: 0,
-        leftOffset: 0,
         barSpacing: 8,
         minBarSpacing: 1,
         fixLeftEdge: true,
@@ -256,7 +254,7 @@ export const AdvancedTradingChart = ({
     let chartData;
     if (chartType === 'candlestick') {
       chartData = candleData.map(d => ({
-        time: d.time,
+        time: d.time as any,
         open: d.open,
         high: d.high,
         low: d.low,
@@ -265,7 +263,7 @@ export const AdvancedTradingChart = ({
     } else {
       // For line and area charts, only use close price
       chartData = candleData.map(d => ({
-        time: d.time,
+        time: d.time as any,
         value: d.close,
       }));
     }
@@ -305,7 +303,7 @@ export const AdvancedTradingChart = ({
             lineWidth: 2,
             title: 'SMA(20)'
           });
-          smaSeries.setData(smaData);
+          smaSeries.setData(smaData.map(d => ({ time: d.time as any, value: d.value })));
           indicatorSeriesRefs.current.sma20 = smaSeries;
         }
       }
@@ -319,7 +317,7 @@ export const AdvancedTradingChart = ({
             lineWidth: 2,
             title: 'EMA(20)'
           });
-          emaSeries.setData(emaData);
+          emaSeries.setData(emaData.map(d => ({ time: d.time as any, value: d.value })));
           indicatorSeriesRefs.current.ema20 = emaSeries;
         }
       }
@@ -335,7 +333,7 @@ export const AdvancedTradingChart = ({
             lineStyle: 2, // dashed
             title: 'BB Upper'
           });
-          upperBand.setData(bbData.map(d => ({ time: d.time, value: d.upper })));
+          upperBand.setData(bbData.map(d => ({ time: d.time as any, value: d.upper })));
 
           // Lower band
           const lowerBand = chart.addLineSeries({
@@ -344,7 +342,7 @@ export const AdvancedTradingChart = ({
             lineStyle: 2, // dashed
             title: 'BB Lower'
           });
-          lowerBand.setData(bbData.map(d => ({ time: d.time, value: d.lower })));
+          lowerBand.setData(bbData.map(d => ({ time: d.time as any, value: d.lower })));
 
           // Middle band (SMA)
           const middleBand = chart.addLineSeries({
@@ -352,7 +350,7 @@ export const AdvancedTradingChart = ({
             lineWidth: 1,
             title: 'BB Middle'
           });
-          middleBand.setData(bbData.map(d => ({ time: d.time, value: d.middle })));
+          middleBand.setData(bbData.map(d => ({ time: d.time as any, value: d.middle })));
 
           indicatorSeriesRefs.current.bollinger = { upper: upperBand, lower: lowerBand, middle: middleBand };
         }
@@ -361,7 +359,7 @@ export const AdvancedTradingChart = ({
       // Volume Profile (simplified overlay)
       if (showIndicators.volume) {
         const volumeData = candleData.map(d => ({
-          time: d.time,
+          time: d.time as any,
           value: d.volume,
           color: d.close >= d.open ? '#4CAF50' : '#F44336'
         }));
@@ -401,7 +399,7 @@ export const AdvancedTradingChart = ({
             });
 
             // Create horizontal line
-            const lineData = candleData.map(d => ({ time: d.time, value: level.price }));
+            const lineData = candleData.map(d => ({ time: d.time as any, value: level.price }));
             lineSeries.setData(lineData);
 
             if (!indicatorSeriesRefs.current.support) {
@@ -448,7 +446,7 @@ export const AdvancedTradingChart = ({
       // If it's a new minute, create a new candle
       if (currentTime > lastCandle.time) {
         const newCandle = {
-          time: currentTime,
+          time: currentTime as any,
           open: lastCandle.close,
           high: Math.max(lastCandle.close, newPrice),
           low: Math.min(lastCandle.close, newPrice),
@@ -459,7 +457,7 @@ export const AdvancedTradingChart = ({
           candlestickSeriesRef.current.update(newCandle);
         } else {
           candlestickSeriesRef.current.update({
-            time: currentTime,
+            time: currentTime as any,
             value: newPrice,
           });
         }
@@ -476,7 +474,7 @@ export const AdvancedTradingChart = ({
       } else {
         // Update current candle
         const updatedCandle = {
-          time: lastCandle.time,
+          time: lastCandle.time as any,
           open: lastCandle.open,
           high: Math.max(lastCandle.open, lastCandle.high, newPrice),
           low: Math.min(lastCandle.open, lastCandle.low, newPrice),
@@ -487,7 +485,7 @@ export const AdvancedTradingChart = ({
           candlestickSeriesRef.current.update(updatedCandle);
         } else {
           candlestickSeriesRef.current.update({
-            time: lastCandle.time,
+            time: lastCandle.time as any,
             value: newPrice,
           });
         }
