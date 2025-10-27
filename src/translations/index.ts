@@ -239,7 +239,25 @@ export const translations: Record<Language, Translations> = {
 };
 
 export const useTranslation = (language: Language) => {
-  return (key: keyof Translations) => {
-    return translations[language][key];
+  return (key: keyof Translations | string): string => {
+    // Handle nested keys like 'languages.pt'
+    if (key.includes('.')) {
+      const keys = key.split('.');
+      let value: any = translations[language];
+      
+      for (const k of keys) {
+        if (value && typeof value === 'object' && k in value) {
+          value = value[k];
+        } else {
+          return key; // Return key if not found
+        }
+      }
+      
+      return typeof value === 'string' ? value : key;
+    }
+    
+    // Handle direct keys
+    const value = translations[language][key as keyof Translations];
+    return typeof value === 'string' ? value : key;
   };
 };

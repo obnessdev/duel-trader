@@ -224,8 +224,9 @@ const Index = () => {
           exitPrice: endPrice,
           startTime: bet.timestamp,
           endTime: Date.now(),
-          duration: 60,
           status: 'completed',
+          timeframe: 60,
+          fee: 0,
           result: isWin ? 'win' : 'loss',
           profit
         };
@@ -248,7 +249,7 @@ const Index = () => {
             data: {
               result: 'refund',
               profit: refundAmount,
-              originalLoss: profit,
+              originalLoss: bet.amount,
               asset: 'BTC/USDT',
             }
           });
@@ -358,7 +359,6 @@ const Index = () => {
       <Header
         currentTheme={theme}
         onThemeChange={setTheme}
-        onToggleComments={() => {}}
       />
 
       <div className="flex flex-1 min-h-0">

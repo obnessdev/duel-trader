@@ -13,6 +13,14 @@ export interface Comentario {
   responsavel: string | null
 }
 
+export interface Comment {
+  id: number
+  created_at: string
+  content: string
+  user_id: string
+  username: string
+}
+
 export interface Database {
   public: {
     Tables: {

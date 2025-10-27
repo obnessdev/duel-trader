@@ -14,7 +14,7 @@ export interface Trade {
   startTime: number;
   endTime?: number;
   status: DuelStatus;
-  result?: 'win' | 'loss';
+  result?: 'win' | 'loss' | 'refund';
   profit?: number;
 }
 
@@ -42,7 +42,8 @@ export interface ChatMessage {
     direction?: Direction;
     amount?: number;
     asset?: string;
-    result?: 'win' | 'loss';
+    result?: 'win' | 'loss' | 'refund';
     profit?: number;
+    originalLoss?: number;
   };
 }

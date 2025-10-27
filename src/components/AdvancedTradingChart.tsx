@@ -201,7 +201,6 @@ export const AdvancedTradingChart = ({
       rightPriceScale: {
         borderColor: gridLineColor,
         textColor: chartTextColor,
-        width: 60,
         scaleMargins: {
           top: 0.005,
           bottom: 0.005,
@@ -212,7 +211,6 @@ export const AdvancedTradingChart = ({
         timeVisible: true,
         secondsVisible: false,
         rightOffset: 0,
-        leftOffset: 0,
         barSpacing: 8,
         minBarSpacing: 1,
         fixLeftEdge: true,
@@ -305,7 +303,7 @@ export const AdvancedTradingChart = ({
             lineWidth: 2,
             title: 'SMA(20)'
           });
-          smaSeries.setData(smaData);
+          smaSeries.setData(smaData as any);
           indicatorSeriesRefs.current.sma20 = smaSeries;
         }
       }
@@ -319,7 +317,7 @@ export const AdvancedTradingChart = ({
             lineWidth: 2,
             title: 'EMA(20)'
           });
-          emaSeries.setData(emaData);
+          emaSeries.setData(emaData as any);
           indicatorSeriesRefs.current.ema20 = emaSeries;
         }
       }
@@ -335,7 +333,7 @@ export const AdvancedTradingChart = ({
             lineStyle: 2, // dashed
             title: 'BB Upper'
           });
-          upperBand.setData(bbData.map(d => ({ time: d.time, value: d.upper })));
+          upperBand.setData(bbData.map(d => ({ time: d.time, value: d.upper })) as any);
 
           // Lower band
           const lowerBand = chart.addLineSeries({
@@ -344,7 +342,7 @@ export const AdvancedTradingChart = ({
             lineStyle: 2, // dashed
             title: 'BB Lower'
           });
-          lowerBand.setData(bbData.map(d => ({ time: d.time, value: d.lower })));
+          lowerBand.setData(bbData.map(d => ({ time: d.time, value: d.lower })) as any);
 
           // Middle band (SMA)
           const middleBand = chart.addLineSeries({
@@ -352,7 +350,7 @@ export const AdvancedTradingChart = ({
             lineWidth: 1,
             title: 'BB Middle'
           });
-          middleBand.setData(bbData.map(d => ({ time: d.time, value: d.middle })));
+          middleBand.setData(bbData.map(d => ({ time: d.time, value: d.middle })) as any);
 
           indicatorSeriesRefs.current.bollinger = { upper: upperBand, lower: lowerBand, middle: middleBand };
         }
@@ -375,7 +373,7 @@ export const AdvancedTradingChart = ({
           title: 'Volume'
         });
 
-        volumeSeries.setData(volumeData);
+        volumeSeries.setData(volumeData as any);
         indicatorSeriesRefs.current.volume = volumeSeries;
 
         // Configure volume price scale
@@ -402,7 +400,7 @@ export const AdvancedTradingChart = ({
 
             // Create horizontal line
             const lineData = candleData.map(d => ({ time: d.time, value: level.price }));
-            lineSeries.setData(lineData);
+            lineSeries.setData(lineData as any);
 
             if (!indicatorSeriesRefs.current.support) {
               indicatorSeriesRefs.current.support = [];

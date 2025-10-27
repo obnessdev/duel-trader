@@ -110,7 +110,7 @@ export const SimpleTradingChart = ({ priceData, isConnected, asset }: SimpleTrad
       close: d.close,
     }));
 
-    candlestickSeries.setData(chartData);
+    candlestickSeries.setData(chartData as any);
 
     // Handle resize
     const handleResize = () => {

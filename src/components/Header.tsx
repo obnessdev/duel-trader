@@ -107,7 +107,7 @@ export const Header = ({
                 onClick={() => setLanguage('pt')}
               >
                 <span className={language === 'pt' ? 'font-bold' : ''}>
-                  🇧🇷 {t('languages').pt}
+                  🇧🇷 {t('languages.pt')}
                 </span>
               </DropdownMenuItem>
               <DropdownMenuItem
@@ -115,7 +115,7 @@ export const Header = ({
                 onClick={() => setLanguage('en')}
               >
                 <span className={language === 'en' ? 'font-bold' : ''}>
-                  🇺🇸 {t('languages').en}
+                  🇺🇸 {t('languages.en')}
                 </span>
               </DropdownMenuItem>
               <DropdownMenuItem
@@ -123,7 +123,7 @@ export const Header = ({
                 onClick={() => setLanguage('es')}
               >
                 <span className={language === 'es' ? 'font-bold' : ''}>
-                  🇪🇸 {t('languages').es}
+                  🇪🇸 {t('languages.es')}
                 </span>
               </DropdownMenuItem>
             </DropdownMenuContent>
