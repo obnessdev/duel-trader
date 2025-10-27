@@ -28,8 +28,8 @@ const onboardingSteps: OnboardingStep[] = [
   },
   {
     id: 'chart',
-    title: '📈 Gráfico TradingView',
-    content: 'Gráfico com todas as ferramentas de análise técnica habilitadas. Timeframe inicial de 1 minuto, com linhas verticais a cada 5min e horizontais acompanhando o preço.',
+    title: '📈 Gráfico TradingView Embed',
+    content: 'Este é um gráfico TradingView embedado com todas as ferramentas de desenho habilitadas (linhas, texto, emojis, etc). ⚠️ IMPORTANTE: Para verificar se uma aposta foi realmente ganha ou perdida, precisamos bater numa API externa para obter dados precisos em tempo real!',
     target: '[data-onboarding="chart"]',
     position: 'bottom'
   },
